@@ -1,9 +1,32 @@
-{% if request.user.is_authenticated %}
-  <p>{{ request.user.username }}</p>
-  <a href="{% url 'logout' %}">Logout</a>
-{% else %}
-  <a href="{% url 'login' %}">Login</a>
-  <a href="{% url 'signup' %}">Signup</a>
-{% endif %}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+  <link
+      rel="preload"
+      as="style"
+      href="{% static 'css/style.css' %}"
+      onload="this.rel = 'stylesheet'"
+  />
+</head>
+
+<body>
+  {% if request.user.is_authenticated %}
+    <p>{{ request.user.username }}</p>
+    <a href="{% url 'logout' %}">Logout</a>
+  {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}">Signup</a>
+  {% endif %}
+</body>
 
 <h1>Welcome!</h1>
+<img src="{% static 'img/Singapore-Green-Plan.jpg' %}" alt = 'Singapore Green Plan' class="center"/>
+<h2>About Us</h2>
+<p>
+  We hope to help Singaporeans make the transition to a sustainable lifestyle, and in their
+  journey towards a greener Singapore and positive environmental change, through a
+  multi-pronged approach that leverages technology and community engagement to inspire a
+  culture of sustainability.
+</p>
+{% endblock %}
