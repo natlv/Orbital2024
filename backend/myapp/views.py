@@ -64,6 +64,11 @@ class EventJoinView(TemplateView):
     form_class = EventJoinForm
     success_url = reverse_lazy('event_join')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['events'] = Event.objects.all()  # Add all events to the context
+        return context
+
     def form_valid(self, form):
         # Handle the form submission
         # For simplicity, just print the form data or save to a different model if needed
