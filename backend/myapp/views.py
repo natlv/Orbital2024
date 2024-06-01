@@ -1,6 +1,10 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout 
-from .forms import SignupForm, LoginForm
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
+from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm
+from .models import Event
 
 # Create your views here.
 # Home page
@@ -37,3 +41,31 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+# create event page 
+class EventCreateView(FormView):
+    template_name = 'event_create.html'
+    form_class = EventCreateForm
+    success_url = reverse_lazy('event_create')
+
+    def form_valid(self, form):
+        Event.objects.create(
+            creator=form.cleaned_data['creator'],
+            organisation=form.cleaned_data['organisation'],
+            event_name=form.cleaned_data['event_name'],
+            event_type=form.cleaned_data['event_type'],
+            event_location=form.cleaned_data['event_location']
+        )
+        return super().form_valid(form)
+
+# join event page
+class EventJoinView(TemplateView):
+    template_name = 'event_join.html'
+    form_class = EventJoinForm
+    success_url = reverse_lazy('event_join')
+
+    def form_valid(self, form):
+        # Handle the form submission
+        # For simplicity, just print the form data or save to a different model if needed
+        print("User joined event:", form.cleaned_data)
+        return super().form_valid(form)

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link
+        rel="preload"
+        as="style"
+        href="{% static 'css/style.css' %}"
+        onload="this.rel = 'stylesheet'"
+    />
+</head>
+<br>
+<body>
+    <h1>Join Event</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Join</button>
+    </form>
+</body>
+
+{% endblock %}
