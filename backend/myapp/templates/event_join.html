@@ -14,18 +14,11 @@
     <h1>Available Events</h1>
     <ul>
         {% for event in events %}
-            <li>{{ event.event_name }} - {{ event.event_location }}</li>
+            <li><a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }} - {{ event.event_location }}</a></li>
+            - {{ event.event_start }} to {{ event.event_end }}
         {% empty %}
             <li>No events available</li>
         {% endfor %}
     </ul>
-
-    <h2>Join Event</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Join</button>
-    </form>
 </body>
-
 {% endblock %}

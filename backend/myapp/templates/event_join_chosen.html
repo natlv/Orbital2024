@@ -10,14 +10,17 @@
     />
 </head>
 <br>
+<h1><title>Join Event: {{ event.event_name }}</title></h1>
 <body>
-    <h1>Create an Event</h1>
+    <h1>Join Event: {{ event.event_name }}</h1>
+    <p>Location: {{ event.event_location }}</p>
+    <p>Organized by: {{ event.organisation }}</p>
+    <p>Type: {{ event.get_event_type_display }}</p>
+    
     <form method="post">
         {% csrf_token %}
-        {{ form.non_field_errors }}
         {{ form.as_p }}
-        <button type="submit">Submit</button>
+        <button type="submit">Join</button>
     </form>
 </body>
-
 {% endblock %}

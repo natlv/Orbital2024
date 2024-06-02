@@ -1,10 +1,15 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
-from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm
 from .models import Event
+
 
 # Create your views here.
 # Home page
@@ -43,34 +48,76 @@ def user_logout(request):
     return redirect('login')
 
 # create event page 
-class EventCreateView(FormView):
+class EventCreateView(LoginRequiredMixin, FormView):
     template_name = 'event_create.html'
     form_class = EventCreateForm
     success_url = reverse_lazy('event_create')
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.info(request, "You must be logged in to create an event")
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_valid(self, form):
-        Event.objects.create(
+        event_start = form.cleaned_data['event_start']
+        event_end = form.cleaned_data['event_end']
+        if not event_end:
+            event_end = event_start
+        event = Event.objects.create(
             creator=form.cleaned_data['creator'],
             organisation=form.cleaned_data['organisation'],
             event_name=form.cleaned_data['event_name'],
             event_type=form.cleaned_data['event_type'],
-            event_location=form.cleaned_data['event_location']
+            event_location=form.cleaned_data['event_location'],
+            event_start=event_start,
+            event_end=event_end
         )
+        event.participants.add(self.request.user)
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
-# join event page
-class EventJoinView(TemplateView):
+# see joinable events page
+class EventJoinView(LoginRequiredMixin, TemplateView):
     template_name = 'event_join.html'
     form_class = EventJoinForm
     success_url = reverse_lazy('event_join')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events'] = Event.objects.all()  # Add all events to the context
+        context['events'] = Event.objects.all()
+        return context
+
+# join specific event page
+class ChosenEventJoinView(LoginRequiredMixin, FormView):
+    template_name = 'event_join_chosen.html'
+    form_class = EventJoinForm
+    success_url = reverse_lazy('event_join')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = get_object_or_404(Event, event_id=self.kwargs['event_id'])
         return context
 
     def form_valid(self, form):
-        # Handle the form submission
-        # For simplicity, just print the form data or save to a different model if needed
-        print("User joined event:", form.cleaned_data)
+        event = get_object_or_404(Event, event_id=self.kwargs['event_id'])
+        event.participants.add(self.request.user)
         return super().form_valid(form)
+    
+# show all the events that user has created or joined
+class MyEventsView(LoginRequiredMixin, TemplateView):
+    template_name = 'my_events.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['created_events'] = Event.objects.filter(creator=self.request.user.username)
+        # context['joined_events'] = Event.objects.filter(participants=self.request.user).exclude(creator=self.request.user.username)
+        context['joined_events'] = Event.objects.filter(participants=self.request.user)
+        return context
