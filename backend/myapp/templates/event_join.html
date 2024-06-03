@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link
+        rel="preload"
+        as="style"
+        href="{% static 'css/style.css' %}"
+        onload="this.rel = 'stylesheet'"
+    />
+</head>
+<br>
+<body>
+    <h1>Available Events</h1>
+    <ul>
+        {% for event in events %}
+            <li>{{ event.event_name }} - {{ event.event_location }}</li>
+        {% empty %}
+            <li>No events available</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Join Event</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Join</button>
+    </form>
+</body>
+
+{% endblock %}

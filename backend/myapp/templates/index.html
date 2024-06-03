@@ -9,14 +9,23 @@
       onload="this.rel = 'stylesheet'"
   />
 </head>
-
+<br>
 <body>
   {% if request.user.is_authenticated %}
     <p>{{ request.user.username }}</p>
+    <a href="{% url 'event_join' %}">Join an Event</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'event_create' %}">Create an Event</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="{% url 'logout' %}">Logout</a>
   {% else %}
-    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'login' %}">Login</a> 
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="{% url 'signup' %}">Signup</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'event_join' %}">Join an Event</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'event_create' %}">Create an Event</a>
   {% endif %}
 </body>
 
