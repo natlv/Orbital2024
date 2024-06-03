@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link
+        rel="preload"
+        as="style"
+        href="{% static 'css/style.css' %}"
+        onload="this.rel = 'stylesheet'"
+    />
+</head>
+<br>
+<h2>My Events</h2>
+
+  <h3>Events I Created</h3>
+  <ul>
+    {% for event in created_events %}
+      <li>
+        <a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }}</a>
+        - {{ event.event_start }} to {{ event.event_end }}
+      </li>
+    {% endfor %}
+    {% if not created_events %}
+      <p>You have not created any events.</p>
+    {% endif %}
+  </ul>
+
+  <h3>Events I Joined</h3>
+  <ul>
+    {% for event in joined_events %}
+      <li>
+        <a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }}</a>
+        - {{ event.event_start }} to {{ event.event_end }}
+      </li>
+    {% endfor %}
+    {% if not joined_events %}
+      <p>You have not joined any events.</p>
+    {% endif %}
+  </ul>
+{% endblock %}

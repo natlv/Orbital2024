@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link
+        rel="preload"
+        as="style"
+        href="{% static 'css/style.css' %}"
+        onload="this.rel = 'stylesheet'"
+    />
+</head>
+<br>
+<body>
+    <h1>Available Events</h1>
+    <ul>
+        {% for event in events %}
+            <li><a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }} - {{ event.event_location }}</a></li>
+            - {{ event.event_start }} to {{ event.event_end }}
+        {% empty %}
+            <li>No events available</li>
+        {% endfor %}
+    </ul>
+</body>
+{% endblock %}

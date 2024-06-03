@@ -25,3 +25,4 @@ As of Milestone 1, June 3:
 - Created page for logged-in users to create and promote events that they are organising, or that they have come across
 - Created page for logged-in users to see, choose from, and join existing events
 - Created page for logged-in users to see all the events that they have created and/or joined on a single page
+
