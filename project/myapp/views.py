@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,8 +8,8 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
-from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm
-from .models import Event
+from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm
+from .models import Event, UserProfile
 
 
 # Create your views here.
@@ -121,3 +122,20 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
         # context['joined_events'] = Event.objects.filter(participants=self.request.user).exclude(creator=self.request.user.username)
         context['joined_events'] = Event.objects.filter(participants=self.request.user)
         return context
+
+@login_required    
+def profile(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    return render(request, 'profile.html', {'profile': profile})
+
+@login_required
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'edit_profile.html', {'form': form})

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Event
+from .models import Event, UserProfile
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -48,3 +48,8 @@ class EventJoinForm(forms.Form):
     name = forms.CharField(label="Your name", max_length=100)
     email = forms.EmailField(label="Your email")
     event = forms.ModelChoiceField(queryset=Event.objects.all(), label="Select an event to join")
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'location', 'birth_date', 'profile_pic']
