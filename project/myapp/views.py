@@ -122,6 +122,20 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
         # context['joined_events'] = Event.objects.filter(participants=self.request.user).exclude(creator=self.request.user.username)
         context['joined_events'] = Event.objects.filter(participants=self.request.user)
         return context
+    
+# show marketplace for eco-friendly services
+class MarketplaceView(LoginRequiredMixin, TemplateView):
+    template_name = 'marketplace.html'
+
+# show redeemable rewards for users
+class RewardsView(LoginRequiredMixin, TemplateView):
+    template_name = 'rewards.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        context['profile'] = profile
+        return context
 
 @login_required    
 def profile(request):

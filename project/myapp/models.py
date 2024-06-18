@@ -36,3 +36,6 @@ class UserProfile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     profile_pic = models.ImageField(upload_to='myapp/files/profile_pics', null=True, blank=True)
     points = models.IntegerField(default=20)
+
+class Rewards(models.Model):
+    points = models.IntegerField(default=20)
