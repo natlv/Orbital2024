@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('bio', models.TextField(blank=True, max_length=500)),
                 ('location', models.CharField(blank=True, max_length=30)),
                 ('birth_date', models.DateField(blank=True, null=True)),
-                ('profile_pic', models.ImageField(blank=True, upload_to='profile_pics')),
+                ('profile_pic', models.ImageField(blank=True, null=True, upload_to='profile_pics')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

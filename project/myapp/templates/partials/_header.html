@@ -2,12 +2,37 @@
 <header>
   <img src="{% static 'img/logo.png' %}" />
 </header>
+
+{% if request.user.is_authenticated %}
+<p>{{ request.user.username }}</p>
+{% endif %}
+
 <nav>
-  <ul>
+  <ul>    
+    {% if request.user.is_authenticated %}
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <li><a href="{% url 'home' %}">Home</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <li><a href="{% url 'event_join' %}">Join an Event</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <li><a href="{% url 'event_create' %}">Create an Event</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <li><a href="{% url 'my_events' %}">My Events</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <li><a href="{% url 'profile' %}">Profile</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+  {% else %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <li><a href="{% url 'event_join' %}">Join an Event</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <li><a href="{% url 'event_create' %}">Create an Event</a></li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <li><a href="{% url 'login' %}">Login</a> </li>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <li><a href="{% url 'signup' %}">Signup</a></li>
+  {% endif %}
   </ul>
 </nav>
