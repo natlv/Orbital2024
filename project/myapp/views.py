@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm
-from .models import Event, UserProfile
+from .models import Event, UserProfile, Rewards, Marketplace
 
 
 # Create your views here.
@@ -134,7 +134,9 @@ class RewardsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        rewards = Rewards.objects.all()
         context['profile'] = profile
+        context['rewards'] = rewards
         return context
 
 @login_required    
@@ -153,3 +155,17 @@ def edit_profile(request):
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'edit_profile.html', {'form': form})
+
+@login_required
+def claim_reward(request, reward_id):
+    profile = get_object_or_404(UserProfile, user=request.user)
+    reward = get_object_or_404(Rewards, id=reward_id)
+
+    if profile.points >= reward.points_cost:
+        profile.points -= reward.points_cost
+        profile.save()
+        messages.success(request, f'You have successfully claimed {reward.name}!')
+    else:
+        messages.error(request, 'You do not have enough points to claim this reward.')
+
+    return redirect('rewards')
