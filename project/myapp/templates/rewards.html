@@ -1,9 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<h1>Rewards</h1>
 <p>My Points: {{ profile.points }}</p>
 <br>
 <p>Below are some rewards sponsored by our sustainable partners.</p>
 <br>
 
+<style>
+    .messages {
+        list-style-type: none;
+        padding: 0;
+    }
+    .messages li {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .messages .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+    }
+    .messages .error {
+        background-color: #f2dede;
+        color: #a94442;
+    }
+</style>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="rewards-list">
+    {% for reward in rewards %}
+    <div class="reward-item">
+        <img src="{{ reward.image.url }}" alt="{{ reward.name }}" style="width:100px;height:100px;">
+        <h2>{{ reward.name }}</h2>
+        <p>{{ reward.description }}</p>
+        <p>Cost: {{ reward.points_cost }} points</p>
+        {% if profile.points >= reward.points_cost %}
+        <form action="{% url 'claim_reward' reward.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Claim</button>
+        </form>
+        <br>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
