@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm
-from .models import Event, UserProfile
+from .models import Event, UserProfile, EventParticipants
 
 
 # Create your views here.
@@ -70,6 +70,7 @@ class EventCreateView(LoginRequiredMixin, FormView):
         event_end = form.cleaned_data['event_end']
         if not event_end:
             event_end = event_start
+
         event = Event.objects.create(
             creator=form.cleaned_data['creator'],
             organisation=form.cleaned_data['organisation'],
@@ -79,6 +80,15 @@ class EventCreateView(LoginRequiredMixin, FormView):
             event_start=event_start,
             event_end=event_end
         )
+
+        participant = EventParticipants.objects.create(
+            user=self.request.user,
+            event=event,
+            name=self.request.user.username,
+            email=self.request.user.email,
+            is_staff=True
+        )
+
         event.participants.add(self.request.user)
         return super().form_valid(form)
     
@@ -110,6 +120,12 @@ class ChosenEventJoinView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         event = get_object_or_404(Event, event_id=self.kwargs['event_id'])
         event.participants.add(self.request.user)
+        participant = EventParticipants.objects.create(
+            user=self.request.user,
+            event=event,
+            name=form.cleaned_data['name'],
+            email=form.cleaned_data['email']
+        )
         return super().form_valid(form)
     
 # show all the events that user has created or joined
@@ -153,3 +169,12 @@ def edit_profile(request):
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'edit_profile.html', {'form': form})
+
+class ChosenEventParticipantsView(LoginRequiredMixin, TemplateView):
+    model = EventParticipants
+    template_name = 'event_participants.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['participants'] = EventParticipants.objects.all()
+        return context

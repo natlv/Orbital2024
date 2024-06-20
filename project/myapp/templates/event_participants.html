@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Event Participants</h1>
+
+<table>
+  <tr>
+    <th>Participant</th>
+    <th>Event</th>
+    <th>Registration Date</th>
+    <th>Attended</th>
+  </tr>
+  {% for participant in participants %}
+  <tr>
+    <td>{{ participant.user }}</td>
+    <td>{{ participant.event }}</td>
+    <td>{{ participant.registration_date }}</td>
+    <td>{{ participant.attended }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
