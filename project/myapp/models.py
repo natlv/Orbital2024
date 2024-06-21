@@ -52,3 +52,16 @@ class UserProfile(models.Model):
 
 class Rewards(models.Model):
     points = models.IntegerField(default=20)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    points_cost = models.IntegerField()
+    image = models.ImageField(upload_to='myapp/files/reward_pics', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+class Marketplace(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    cost = models.IntegerField()
+    image = models.ImageField(upload_to='myapp/files/marketplace_pics', null=True, blank=True)
