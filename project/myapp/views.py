@@ -192,5 +192,6 @@ class ChosenEventParticipantsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['participants'] = EventParticipants.objects.all()
+        event_id = self.kwargs.get('event_id')
+        context['participants'] = EventParticipants.objects.filter(event_id=event_id)
         return context
