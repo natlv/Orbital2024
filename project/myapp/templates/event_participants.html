@@ -4,21 +4,74 @@
 
 <h1>Event Participants</h1>
 
-<table>
-  <tr>
-    <th>Participant</th>
-    <th>Event</th>
-    <th>Registration Date</th>
-    <th>Attended</th>
-  </tr>
-  {% for participant in participants %}
-  <tr>
-    <td>{{ participant.user }}</td>
-    <td>{{ participant.event }}</td>
-    <td>{{ participant.registration_date }}</td>
-    <td>{{ participant.attended }}</td>
-  </tr>
-  {% endfor %}
-</table>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f2f2f2;
+    color: black;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  tr:hover {
+    background-color: #ddd;
+  }
+  h1 {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  .button-container {
+    text-align: right;
+    margin-bottom: 10px;
+  }
+  .button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .button:hover {
+    background-color: #45a049;
+  }
+</style>
+
+<form method="POST" action="{% url 'update_attendance' event_id %}">
+  {% csrf_token %}
+  <table>
+    <tr>
+      <th>Participant</th>
+      <th>Event</th>
+      <th>Registration Date</th>
+      <th>Attended</th>
+    </tr>
+    {% for participant in participants %}
+    <tr>
+      <td>{{ participant.user }}</td>
+      <td>{{ participant.event }}</td>
+      <td>{{ participant.registration_date }}</td>
+      <td>
+        <input type="checkbox" name="attended_{{ participant.id }}" {% if participant.attended %}checked{% endif %}>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="button-container">
+    <button type="submit" class="button">Update Attendance</button>
+  </div>
+</form>
 
 {% endblock %}
