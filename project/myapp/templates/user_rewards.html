@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>My Rewards</h1>
+
+<style>
+    .rewards-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px; /* space between items */
+    }
+    
+    .reward-item {
+        flex: 0 0 calc(22% - 20px); /* Four items per row */
+        box-sizing: border-box;
+        border: 1px solid #ccc; /* Border around each item */
+        padding: 10px;
+        margin: 10px;
+        text-align: center;
+    }
+    
+    .reward-item img {
+        display: block;
+        margin: 0 auto 10px auto;
+    }
+    
+    .reward-item h2 {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+    
+    .reward-item p {
+        margin: 5px 0;
+    }
+    
+    .reward-item form {
+        margin-top: 10px;
+    }
+    
+    .reward-item button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .reward-item button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<div class="rewards-list">
+    {% for reward in rewards %}
+    <div class="reward-item">
+        <img src="{{ reward.image.url }}" alt="{{ reward.name }}" style="width:100px;height:100px;">
+        <h2>{{ reward.name }}</h2>
+        <p>{{ reward.description }}</p>
+        <p>Cost: {{ reward.points_cost }} points</p>
+        {% if profile.points >= reward.points_cost %}
+        <form action="{% url 'claim_reward' reward.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Claim</button>
+        </form>
+        <br>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <br>
+</div>
+
+{% endblock %}

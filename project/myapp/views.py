@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
 from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm
-from .models import Event, UserProfile, Rewards, Marketplace, EventParticipants
+from .models import Event, UserProfile, Rewards, Marketplace, EventParticipants, UserRewards
 
 
 # Create your views here.
@@ -120,7 +120,7 @@ class ChosenEventJoinView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         event = get_object_or_404(Event, event_id=self.kwargs['event_id'])
         event.participants.add(self.request.user)
-        participant = EventParticipants.objects.create(
+        EventParticipants.objects.create(
             user=self.request.user,
             event=event,
             name=form.cleaned_data['name'],
@@ -179,6 +179,7 @@ def claim_reward(request, reward_id):
 
     if profile.points >= reward.points_cost:
         profile.points -= reward.points_cost
+        UserRewards.objects.create(user=request.user, reward=reward)
         profile.save()
         messages.success(request, f'You have successfully claimed {reward.name}!')
     else:
@@ -186,6 +187,12 @@ def claim_reward(request, reward_id):
 
     return redirect('rewards')
 
+@login_required
+def user_rewards(request):
+    user_rewards = UserRewards.objects.filter(user=request.user)
+    rewards = [user_reward.reward for user_reward in user_rewards]
+    return render(request, 'user_rewards.html', {'rewards': rewards})
+    
 class ChosenEventParticipantsView(LoginRequiredMixin, TemplateView):
     model = EventParticipants
     template_name = 'event_participants.html'

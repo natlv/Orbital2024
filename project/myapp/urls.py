@@ -18,8 +18,8 @@ urlpatterns = [
     path('claim_reward/<int:reward_id>/', claim_reward, name='claim_reward'),
     path('profile/', profile, name='profile'),
     path('edit_profile/', edit_profile, name='edit_profile'),
-    # path('event_participants/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
     path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
+    path('user_rewards/', views.user_rewards, name='user_rewards'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
