@@ -56,7 +56,7 @@
 }
 
 .reward-item h2 {
-    font-size: 1.2em;
+    font-size: 1.3em;
     margin: 10px 0;
 }
 
@@ -79,6 +79,13 @@
 .reward-item button:hover {
     background-color: #45a049;
 }
+
+.reward-item .description {
+    height: 60px; /* Fixed height for description */
+    overflow: hidden; /* Hide overflow text */
+    margin: 5px 0;
+    font-size: 0.75em;
+}
 </style>
 
 <div class="rewards-list">
@@ -86,7 +93,7 @@
     <div class="reward-item">
         <img src="{{ reward.image.url }}" alt="{{ reward.name }}" style="width:100px;height:100px;">
         <h2>{{ reward.name }}</h2>
-        <p>{{ reward.description }}</p>
+        <p class="description">{{ reward.description }}</p>
         <p>Cost: {{ reward.points_cost }} points</p>
         {% if profile.points >= reward.points_cost %}
         <form action="{% url 'claim_reward' reward.id %}" method="post">
