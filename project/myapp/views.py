@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
@@ -202,3 +203,16 @@ class ChosenEventParticipantsView(LoginRequiredMixin, TemplateView):
         event_id = self.kwargs.get('event_id')
         context['participants'] = EventParticipants.objects.filter(event_id=event_id)
         return context
+    
+@csrf_exempt
+def update_attendance(request, event_id):
+    if request.method == 'POST':
+        for participant in EventParticipants.objects.filter(event_id=event_id):
+            checkbox_name = f'attended_{participant.id}'
+            participant.attended = checkbox_name in request.POST
+            participant.save()
+        return redirect(reverse('event_participants_chosen', args=[event_id]))
+    else:
+        # Handling GET requests to view the participants if necessary
+        participants = EventParticipants.objects.filter(event_id=event_id)
+        return render(request, 'event_participants.html', {'participants': participants, 'event_id': event_id})
