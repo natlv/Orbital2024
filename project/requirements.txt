@@ -15,7 +15,7 @@ contourpy==1.2.0
 cycler==0.12.1
 debugpy==1.8.0
 decorator==5.1.1
-Django==5.0.6
+Django>=3.2,<4.0
 executing==2.0.0
 Flask==3.0.0
 fonttools==4.49.0
@@ -71,3 +71,6 @@ vercel==0.2.1
 wcwidth==0.2.8
 Werkzeug==3.0.1
 yarl==1.9.4
+python-decouple
+dj-database-url
+whitenoise

@@ -5,5 +5,9 @@
     ],
     "routes": [
       { "src": "/(.*)", "dest": "backend/wsgi.py" }
-    ]
+    ],
+    "env": {
+      "DJANGO_SECRET_KEY": "django-insecure-k5a7l0na(sem0#+ufb4qi@ek_3s7qbq@+2gf!_818)@9l(0xm%",
+      "DJANGO_DEBUG": "True"
+    }
   }
