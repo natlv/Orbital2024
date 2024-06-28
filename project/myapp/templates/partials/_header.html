@@ -1,44 +1,104 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dropdown Navigation</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        /* Add your CSS styles here */
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            color: white;
+            position: relative;
+            width: 200px;
+            padding: 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+        }
+
+        nav ul li ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: black;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li:hover ul {
+            display: block;
+        }
+
+        nav ul li ul li a {
+            width: 200px;
+            color: white;
+            display: block;
+        }
+
+        nav ul li ul li {
+            width: 200px;
+        }
+
+        nav ul li ul li a:hover {
+            background-color: #6B8E8E;
+        }
+    </style>
+</head>
+<body>
 <header>
-  <img src="{% static 'img/logo.png' %}" />
+    <img src="{% static 'img/logo.png' %}" alt="Logo" />
 </header>
 
 {% if request.user.is_authenticated %}
-<p>{{ request.user.username }}</p>
+  <p>{{ request.user.username }}</p>
 {% endif %}
 
 <nav>
-  <ul>    
-    {% if request.user.is_authenticated %}
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'home' %}">Home</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'event_join' %}">Join an Event</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'event_create' %}">Create an Event</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'my_events' %}">My Events</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'marketplace' %}">Marketplace</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'rewards' %}">Rewards</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'user_rewards' %}">My Rewards</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'profile' %}">Profile</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'logout' %}">Logout</a></li>
-  {% else %}
-    <li><a href="{% url 'home' %}">Home</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'event_join' %}">Join an Event</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'event_create' %}">Create an Event</a></li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'login' %}">Login</a> </li>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <li><a href="{% url 'signup' %}">Signup</a></li>
-  {% endif %}
-  </ul>
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+
+        {% if request.user.is_authenticated %}
+        
+        <li>
+            Events
+            <ul>
+                <li><a href="{% url 'event_join' %}">Join an Event</a></li>
+                <li><a href="{% url 'event_create' %}">Create an Event</a></li>
+                <li><a href="{% url 'my_events' %}">My Events</a></li>
+            </ul>
+        </li>
+        
+        <li>
+            Rewards
+            <ul>
+                <li><a href="{% url 'rewards' %}">Claim Rewards</a></li>
+                <li><a href="{% url 'user_rewards' %}">My Rewards</a></li>
+            </ul>
+        </li>
+        
+        <li><a href="{% url 'marketplace' %}">Marketplace</a></li>
+        <li><a href="{% url 'profile' %}">Profile</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        
+        {% else %}
+        
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}">Signup</a></li>
+        
+        {% endif %}
+    </ul>
 </nav>
+</body>
+</html>
