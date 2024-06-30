@@ -8,10 +8,27 @@
       href="{% static 'css/style.css' %}"
       onload="this.rel = 'stylesheet'"
   />
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const tips = {
+        0: "Integrate renewable energy sources like solar panels or wind turbines into your home.",
+        1: "Reduce food waste by planning your meals ahead and buying only what you need.",
+        2: "Choosing organic products helps reduce your impact on wildlife and our planet.",
+        3: "Save energy by turning off the lights when you leave a room.",
+        4: "Growing a compost garden reduces pollution.",
+        5: "Choose sustainably packaged beauty products.",
+        6: "Support local businesses to reduce emissions from shipping."
+      };
+      const today = new Date().getDay();
+      document.getElementById("tip-of-the-day").innerText = tips[today];
+    });
+  </script>
 </head>
 <br>
 <body>
 <h1>Welcome!</h1>
+<h2>Tip of the Day:</h2>
+<p id="tip-of-the-day"></p>
 <img src="{% static 'img/Singapore-Green-Plan.jpg' %}" alt = 'Singapore Green Plan' class="center"/>
 <h2>About Us</h2>
 <p>
