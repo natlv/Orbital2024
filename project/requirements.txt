@@ -6,4 +6,4 @@ typing_extensions==4.7.1
 gunicorn==22.0.0
 importlib-metadata==6.7.0
 packaging==24.0
-zipp==3.15.0\
+zipp==3.15.0
