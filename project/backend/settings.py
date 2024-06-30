@@ -31,6 +31,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -85,13 +86,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# PostgreSQL Database (not currently in use but we may want to switch to it)
-# DATABASES = {
-#     'default': dj_database_url.config(default='postgres://localhost')
-# }
-
-# 'default': dj_database_url.config(default=config('DATABASE_URL'))
 
 
 # Password validation
