@@ -62,7 +62,7 @@
 </header>
 
 {% if request.user.is_authenticated %}
-  <p>{{ request.user.username }}</p>
+  <p>Welcome, {{ request.user.username }}</p>
 {% endif %}
 
 <nav>
@@ -88,7 +88,14 @@
             </ul>
         </li>
         
-        <li><a href="{% url 'marketplace' %}">Marketplace</a></li>
+        <li>
+            Marketplace
+            <ul>
+                <li><a href="{% url 'marketplace' %}">Buy</a></li>
+                <li><a href="{% url 'marketplace_sell' %}">Sell</a></li>
+            </ul>
+        </li>
+        
         <li><a href="{% url 'profile' %}">Profile</a></li>
         <li><a href="{% url 'logout' %}">Logout</a></li>
         
