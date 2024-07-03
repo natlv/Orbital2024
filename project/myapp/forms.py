@@ -2,8 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.utils import timezone
-from .models import Event, UserProfile, EventParticipants
+from .models import Event, UserProfile, EventParticipants, Item
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -54,3 +53,8 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['bio', 'location', 'birth_date', 'profile_pic']
+
+class ItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'price', 'image']
