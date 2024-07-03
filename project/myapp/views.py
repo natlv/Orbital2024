@@ -9,8 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
-from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm
-from .models import Event, UserProfile, Rewards, Marketplace, EventParticipants, UserRewards
+from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm, ItemForm
+from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item
 
 
 # Create your views here.
@@ -141,11 +141,22 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
         return context
     
 # show marketplace for eco-friendly services
-class MarketplaceView(LoginRequiredMixin, TemplateView):
-    template_name = 'marketplace.html'
+@login_required
+def marketplace_sell(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.seller = request.user
+            item.save()
+            return redirect('marketplace')
+    else:
+        form = ItemForm()
+    return render(request, 'marketplace_sell.html', {'form': form})
 
-class MarketplaceSellView(LoginRequiredMixin, TemplateView):
-    template_name = 'marketplace_sell.html'
+def marketplace(request):
+    items = Item.objects.all()
+    return render(request, 'marketplace.html', {'items': items})
 
 # show redeemable rewards for users
 class RewardsView(LoginRequiredMixin, TemplateView):

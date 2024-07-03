@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1>Marketplace Sell</h1>
-<br>
-<body>Sell Work in progress</body>
+<h1>Sell an Item</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">List Item</button>
+</form>
 {% endblock %}
