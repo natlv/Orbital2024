@@ -144,6 +144,9 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
 class MarketplaceView(LoginRequiredMixin, TemplateView):
     template_name = 'marketplace.html'
 
+class MarketplaceSellView(LoginRequiredMixin, TemplateView):
+    template_name = 'marketplace_sell.html'
+
 # show redeemable rewards for users
 class RewardsView(LoginRequiredMixin, TemplateView):
     template_name = 'rewards.html'
