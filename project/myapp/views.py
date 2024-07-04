@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
@@ -227,6 +229,21 @@ def update_attendance(request, event_id):
             participant.save()
         return redirect(reverse('event_participants_chosen', args=[event_id]))
     else:
-        # Handling GET requests to view the participants if necessary
         participants = EventParticipants.objects.filter(event_id=event_id)
         return render(request, 'event_participants.html', {'participants': participants, 'event_id': event_id})
+    
+@transaction.atomic
+def close_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    attendances = EventParticipants.objects.filter(event=event, attended=True)
+    
+    for attendance in attendances:
+        user = attendance.user
+        user_profile = UserProfile.objects.get(user=user)
+        user_profile.points += 10
+        user_profile.save()
+    
+    event.delete()
+    
+    return redirect('home')

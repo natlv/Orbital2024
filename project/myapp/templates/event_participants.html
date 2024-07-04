@@ -47,6 +47,19 @@
   .button:hover {
     background-color: #45a049;
   }
+  .close-button {
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 10px;
+  }
+  .close-button:hover {
+    background-color: #e53935;
+  }
 </style>
 
 <form method="POST" action="{% url 'update_attendance' event_id %}">
@@ -71,6 +84,13 @@
   </table>
   <div class="button-container">
     <button type="submit" class="button">Update Attendance</button>
+  </div>
+</form>
+
+<form method="POST" action="{% url 'close_event' event_id %}">
+  {% csrf_token %}
+  <div class="button-container">
+    <button type="submit" class="close-button">Close Event</button>
   </div>
 </form>
 

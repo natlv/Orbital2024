@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
-from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance
+from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, close_event
 
 urlpatterns = [
     path('', views.index, name='home'),
@@ -20,8 +20,9 @@ urlpatterns = [
     path('profile/', profile, name='profile'),
     path('edit_profile/', edit_profile, name='edit_profile'),
     path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
-     path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
+    path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
     path('user_rewards/', views.user_rewards, name='user_rewards'),
+    path('close_event/<int:event_id>/', close_event, name='close_event'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
