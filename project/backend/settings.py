@@ -31,7 +31,6 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
-# ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1']
 
 # Application definition
 
