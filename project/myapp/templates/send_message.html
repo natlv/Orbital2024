@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1>Sell an Item</h1>
-<form method="post" enctype="multipart/form-data">
+<h1>Contact Seller about {{ item.name }}</h1>
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">List Item!</button>
+    <button type="submit">Send Message</button>
 </form>
 {% endblock %}

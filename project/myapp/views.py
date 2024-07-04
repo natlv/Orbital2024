@@ -9,11 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView
-from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm, ItemForm
-from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item
+from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm, ItemForm, MessageForm
+from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item, Message
 
 
-# Create your views here.
+
 # Home page
 def index(request):
     return render(request, 'index.html')
@@ -139,24 +139,6 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
         # context['joined_events'] = Event.objects.filter(participants=self.request.user).exclude(creator=self.request.user.username)
         context['joined_events'] = Event.objects.filter(participants=self.request.user)
         return context
-    
-# show marketplace for eco-friendly services
-@login_required
-def marketplace_sell(request):
-    if request.method == 'POST':
-        form = ItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.seller = request.user
-            item.save()
-            return redirect('marketplace')
-    else:
-        form = ItemForm()
-    return render(request, 'marketplace_sell.html', {'form': form})
-
-def marketplace(request):
-    items = Item.objects.all()
-    return render(request, 'marketplace.html', {'items': items})
 
 # show redeemable rewards for users
 class RewardsView(LoginRequiredMixin, TemplateView):
@@ -230,3 +212,42 @@ def update_attendance(request, event_id):
         # Handling GET requests to view the participants if necessary
         participants = EventParticipants.objects.filter(event_id=event_id)
         return render(request, 'event_participants.html', {'participants': participants, 'event_id': event_id})
+    
+    
+# show marketplace for eco-friendly services
+@login_required
+def marketplace_sell(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.seller = request.user
+            item.save()
+            return redirect('marketplace')
+    else:
+        form = ItemForm()
+    return render(request, 'marketplace_sell.html', {'form': form})
+
+def marketplace(request):
+    items = Item.objects.all()
+    return render(request, 'marketplace.html', {'items': items})
+
+def send_message(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user
+            message.recipient = item.seller
+            message.item = item
+            message.save()
+            return redirect('marketplace')
+    else:
+        form = MessageForm()
+    return render(request, 'send_message.html', {'form': form, 'item': item})
+
+@login_required
+def inbox(request):
+    messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+    return render(request, 'inbox.html', {'messages': messages})

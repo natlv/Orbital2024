@@ -42,6 +42,7 @@
         <p>{{ item.description }}</p>
         <p>${{ item.price }}</p>
         <p>Seller: {{ item.seller.username }}</p>
+        <a href="{% url 'send_message' item.id %}">Contact Seller</a>
     </div>
     {% endfor %}
 </div>

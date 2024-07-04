@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Event, UserProfile, EventParticipants, Item
+from .models import Event, UserProfile, EventParticipants, Item, Message
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -58,3 +58,11 @@ class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ['name', 'description', 'price', 'image']
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+        }
