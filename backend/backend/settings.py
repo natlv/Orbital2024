@@ -30,7 +30,14 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'greensg.herokuapp.com',
+    'greensg1.herokuapp.com',
+    'https://greensg1-0dd96511b758.herokuapp.com/',
+]
 
 # Application definition
 
