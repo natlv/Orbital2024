@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover; /* Ensure the image fits within the dimensions without distortion */
+        float: left; /* Align the image to the left */
+        margin-right: 10px; /* Add some space to the right of the image */
+    }
+</style>
+
+{% if user.profile.profile_pic %}
+    <img src="{% url 'profile_pic' user.id %}" alt="Profile Picture" class="profile-pic">
+{% else %}
+    <img src="{% static 'img/default_profile_pic.png' %}" alt="Default Profile Picture" class="profile-pic">
+{% endif %}
+
+<h1>{{ profile.user.username }}'s Profile</h1>
+<br>
+<br>
+<body>
+    <p>Bio: {{ profile.bio }}</p>
+    <p>Location: {{ profile.location }}</p>
+    <p>Birthdate: {{ profile.birth_date }}</p>
+    <p>Points: {{ profile.points }}</p>
+</body>
+<br>
+<a href="{% url 'edit_profile' %}">Edit Profile</a>
+<br>
+{% endblock %}
