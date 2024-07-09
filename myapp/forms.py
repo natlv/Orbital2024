@@ -52,7 +52,7 @@ class EventCreateForm(forms.Form):
 class EventJoinForm(forms.Form):
     name = forms.CharField(label="Your name", max_length=100)
     email = forms.EmailField(label="Your email")
-    event = forms.ModelChoiceField(queryset=Event.objects.all(), label="Select an event to join")
+    # event = forms.ModelChoiceField(queryset=Event.objects.all(), label="Select an event to join")
     
 
 class ProfileForm(forms.ModelForm):
