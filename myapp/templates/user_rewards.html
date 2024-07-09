@@ -18,11 +18,22 @@
         padding: 10px;
         margin: 10px;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
     .reward-item img {
         display: block;
         margin: 0 auto 10px auto;
+    }
+
+    .reward-item .name {
+    font-size: 1.2em;
+    margin: 10px 0;
+    max-height: 40px; /* Fixed height for name */
+    overflow: hidden; /* Hide overflow text */
+    flex-grow: 0;
     }
     
     .reward-item h2 {
@@ -55,7 +66,7 @@
     {% for reward in rewards %}
     <div class="reward-item">
         <img src="{{ reward.image.url }}" alt="{{ reward.name }}" style="width:100px;height:100px;">
-        <h2>{{ reward.name }}</h2>
+        <div class="name">{{ reward.name }}</div>
         <p>I claimed this reward for {{ reward.points_cost }} points!</p>
         {% if profile.points >= reward.points_cost %}
         <form action="{% url 'claim_reward' reward.id %}" method="post">
@@ -68,5 +79,18 @@
     {% endfor %}
     <br>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const elements = document.querySelectorAll(".description, .name");
+        elements.forEach(element => {
+            while (element.scrollHeight > element.clientHeight) {
+                const currentFontSize = window.getComputedStyle(element, null).getPropertyValue('font-size');
+                const newFontSize = parseFloat(currentFontSize) - 1;
+                element.style.fontSize = newFontSize + 'px';
+            }
+        });
+    });
+</script>
 
 {% endblock %}
