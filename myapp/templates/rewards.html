@@ -48,6 +48,9 @@
     padding: 10px;
     margin: 10px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .reward-item img {
@@ -60,11 +63,23 @@
     margin: 10px 0;
 }
 
-.reward-item p {
+.reward-item .description {
+    flex-grow: 1;
     margin: 5px 0;
+    font-size: 1em; /* Default font size, will be adjusted */
+    max-height: 60px; /* Fixed height for description */
+    overflow: hidden; /* Hide overflow text */
 }
 
-.reward-item form {
+/* .reward-item p {
+    margin: 5px 0;
+} */
+
+/* .reward-item form {
+    margin-top: 10px;
+} */
+
+.reward-item .details {
     margin-top: 10px;
 }
 
@@ -99,5 +114,18 @@
     {% endfor %}
     <br>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const descriptions = document.querySelectorAll(".description");
+        descriptions.forEach(description => {
+            while (description.scrollHeight > description.clientHeight) {
+                const currentFontSize = window.getComputedStyle(description, null).getPropertyValue('font-size');
+                const newFontSize = parseFloat(currentFontSize) - 1;
+                description.style.fontSize = newFontSize + 'px';
+            }
+        });
+    });
+</script>
 
 {% endblock %}

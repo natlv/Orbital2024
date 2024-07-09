@@ -29,9 +29,15 @@
   <ul>
     {% for event in joined_events %}
       <li>
-        <a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }}</a>
+        <a>{{ event.event_name }}</a>
         - {{ event.event_start }} to {{ event.event_end }}
       </li>
+      <li>
+        Location: {{ event.event_location }}
+      </li>
+      <li>
+        Contact Event Creator: (link to msgs)
+      </li>    
     {% endfor %}
     {% if not joined_events %}
       <p>You have not joined any events.</p>
