@@ -95,7 +95,7 @@
     {% for reward in rewards %}
     <div class="reward-item">
         <img src="{{ reward.image.url }}" alt="{{ reward.name }}" style="width:100px;height:100px;">
-        <p class="name">{{ reward.name }}</h2>
+        <p class="name">{{ reward.name }}</p>
         <p class="description">{{ reward.description }}</p>
         <p>Cost: {{ reward.points_cost }} points</p>
         {% if profile.points >= reward.points_cost %}
