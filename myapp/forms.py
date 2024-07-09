@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Event, UserProfile, EventParticipants, Item, Message
+from django.utils import timezone
+from .models import Event, UserProfile, Item, Message
 from PIL import Image
 import io
 
@@ -41,8 +42,11 @@ class EventCreateForm(forms.Form):
         event_end = cleaned_data.get('event_end')
 
         if event_start and event_end and event_end < event_start:
-            raise ValidationError("Event end time cannot be before the start time.")
+            raise forms.ValidationError("Event end time cannot be before the start time.")
         
+        if event_end < timezone.now():
+            raise forms.ValidationError("Event end time cannot be before the current date and time.")
+
         return cleaned_data
 
 class EventJoinForm(forms.Form):
