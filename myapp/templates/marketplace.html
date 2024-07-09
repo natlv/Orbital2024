@@ -57,7 +57,7 @@
     {% for item in items %}
     <div class="item">
         <img src="{% url 'item_image' item.id %}" alt="{{ item.name }}" style="width:100px;height:100px;">
-        <p class="name">{{ item.name }}</p>
+        <h2 class="name">{{ item.name }}</h2>
         <p class="description">{{ item.description }}</p>
         <p>${{ item.price }}</p>
         <p>Seller: {{ item.seller.username }}</p>
@@ -65,4 +65,18 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const elements = document.querySelectorAll(".description, .name");
+        elements.forEach(element => {
+            while (element.scrollHeight > element.clientHeight) {
+                const currentFontSize = window.getComputedStyle(element, null).getPropertyValue('font-size');
+                const newFontSize = parseFloat(currentFontSize) - 1;
+                element.style.fontSize = newFontSize + 'px';
+            }
+        });
+    });
+</script>
+
 {% endblock %}
