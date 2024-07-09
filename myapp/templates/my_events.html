@@ -29,15 +29,16 @@
   <ul>
     {% for event in joined_events %}
       <li>
-        <a>{{ event.event_name }}</a>
+        {{ event.event_name }}
         - {{ event.event_start }} to {{ event.event_end }}
       </li>
-      <li>
+      <p>
         Location: {{ event.event_location }}
-      </li>
-      <li>
+      </p>
+      <p>
         Contact Event Creator: (link to msgs)
-      </li>    
+      </p>    
+      <br>
     {% endfor %}
     {% if not joined_events %}
       <p>You have not joined any events.</p>
