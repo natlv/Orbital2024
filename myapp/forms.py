@@ -67,7 +67,6 @@ class EventSearchForm(forms.Form):
         ('other', 'Other'),
     ], label='Event Type'
     )
-    
 
 class ProfileForm(forms.ModelForm):
     upload_pic = forms.FileField(required=False) 

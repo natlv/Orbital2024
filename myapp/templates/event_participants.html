@@ -72,13 +72,6 @@
   <div class="button-container">
     <button type="submit" class="button">Update Attendance</button>
   </div>
-  <br>
-  <li>
-    <form action="{% url 'delete_event' event.id %}" method="post" style="display:inline;">
-      {% csrf_token %}
-      <button type="submit" onclick="return confirm('Are you sure you want to Delete Event? This cannot be undone!');">Delete Event</button>
-  </form>
-  </li>
 </form>
 
 {% endblock %}
