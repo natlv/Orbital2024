@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
-from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, profile_pic_view, item_image_view, delete_event
+from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, profile_pic_view, item_image_view
 
 urlpatterns = [
     path('', views.index, name='home'),
