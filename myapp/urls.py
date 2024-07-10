@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
-from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, profile_pic_view, item_image_view
+from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, profile_pic_view, item_image_view, delete_event
 
 urlpatterns = [
     path('', views.index, name='home'),
@@ -13,6 +13,9 @@ urlpatterns = [
     path('event_join/', EventJoinView.as_view(), name='event_join'),
     path('event_join/<str:event_id>/', ChosenEventJoinView.as_view(), name='event_join_chosen'),
     path('my_events/', MyEventsView.as_view(), name='my_events'),
+    path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
+    path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
+    path('delete_event/<int:event_id>/', delete_event, name='delete_event'),
     path('marketplace/', views.marketplace, name='marketplace'),
     path('marketplace/sell/', views.marketplace_sell, name='marketplace_sell'),
     path('message/send/<int:item_id>/', views.send_message, name='send_message'),
@@ -21,8 +24,6 @@ urlpatterns = [
     path('claim_reward/<int:reward_id>/', claim_reward, name='claim_reward'),
     path('profile/', profile, name='profile'),
     path('edit_profile/', edit_profile, name='edit_profile'),
-    path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
-    path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
     path('user_rewards/', views.user_rewards, name='user_rewards'),
     path('profile_pic/<int:user_id>/', profile_pic_view, name='profile_pic'),
     path('item_image/<int:item_id>/', item_image_view, name='item_image'),

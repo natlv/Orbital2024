@@ -149,9 +149,20 @@ class MyEventsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['created_events'] = Event.objects.filter(creator=self.request.user.username)
-        # context['joined_events'] = Event.objects.filter(participants=self.request.user).exclude(creator=self.request.user.username)
         context['joined_events'] = Event.objects.filter(participants=self.request.user)
         return context
+    
+@login_required
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id, creator=request.user)  # Ensure only the creator can delete
+
+    if request.method == 'POST':
+        event.delete()
+        messages.success(request, 'Event deleted successfully.')
+        return redirect('my_events.html')
+
+    # if not deleted?
+    return render(request, 'event_participants.html')
 
 # show redeemable rewards for users
 class RewardsView(LoginRequiredMixin, TemplateView):
