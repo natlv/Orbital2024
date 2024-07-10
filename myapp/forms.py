@@ -58,6 +58,7 @@ class EventSearchForm(forms.Form):
     event_type = forms.ChoiceField(
         required=False,
         choices=[
+        ['any', 'Any'],
         ('cleanup', 'Environmental Clean-up'),
         ('seminar', 'Seminar'),
         ('workshop', 'Workshop'),

@@ -113,7 +113,7 @@ class EventJoinView(LoginRequiredMixin, TemplateView):
             
             if query:
                 events = events.filter(event_name__icontains=query)
-            if event_type:
+            if event_type and event_type != 'any':
                 events = events.filter(event_type=event_type)
 
         context['events'] = events
