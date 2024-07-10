@@ -52,7 +52,20 @@ class EventCreateForm(forms.Form):
 class EventJoinForm(forms.Form):
     name = forms.CharField(label="Your name", max_length=100)
     email = forms.EmailField(label="Your email")
-    # event = forms.ModelChoiceField(queryset=Event.objects.all(), label="Select an event to join")
+
+class EventSearchForm(forms.Form):
+    query = forms.CharField(required=False, label='Keyword')
+    event_type = forms.ChoiceField(
+        required=False,
+        choices=[
+        ('cleanup', 'Environmental Clean-up'),
+        ('seminar', 'Seminar'),
+        ('workshop', 'Workshop'),
+        ('planting', 'Tree Planting'),
+        ('recycling', 'Recycling / Composting'),
+        ('other', 'Other'),
+    ], label='Event Type'
+    )
     
 
 class ProfileForm(forms.ModelForm):
