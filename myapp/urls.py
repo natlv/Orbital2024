@@ -15,7 +15,6 @@ urlpatterns = [
     path('my_events/', MyEventsView.as_view(), name='my_events'),
     path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
     path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
-    path('delete_event/<int:event_id>/', delete_event, name='delete_event'),
     path('marketplace/', views.marketplace, name='marketplace'),
     path('marketplace/sell/', views.marketplace_sell, name='marketplace_sell'),
     path('message/send/<int:item_id>/', views.send_message, name='send_message'),
