@@ -159,7 +159,7 @@ def delete_event(request, event_id):
     if request.method == 'POST':
         event.delete()
         messages.success(request, 'Event deleted successfully.')
-        return redirect('my_events.html')
+        return redirect('event_participants.html')
 
     # if not deleted?
     return render(request, 'event_participants.html')
