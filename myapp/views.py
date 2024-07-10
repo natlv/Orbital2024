@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, ProfileForm, ItemForm, MessageForm
+from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, EventSearchForm, ProfileForm, ItemForm, MessageForm
 from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item, Message
 
 
@@ -104,7 +104,20 @@ class EventJoinView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events'] = Event.objects.filter(event_end__gte=timezone.now()) # removes events past end date
+        form = EventSearchForm(self.request.GET or None)
+        events = Event.objects.filter(event_end__gte=timezone.now())
+        
+        if form.is_valid():
+            query = form.cleaned_data.get('query')
+            event_type = form.cleaned_data.get('event_type')
+            
+            if query:
+                events = events.filter(event_name__icontains=query)
+            if event_type:
+                events = events.filter(event_type=event_type)
+
+        context['events'] = events
+        context['form'] = form
         return context
 
 # join specific event page

@@ -12,6 +12,12 @@
 <br>
 <body>
     <h1>Available Events</h1>
+
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
     <ul>
         {% for event in events %}
             <li><a href="{% url 'event_join_chosen' event.event_id %}">{{ event.event_name }} - {{ event.event_location }}</a></li>
