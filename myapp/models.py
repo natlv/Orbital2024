@@ -65,18 +65,7 @@ class Rewards(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     points_cost = models.IntegerField()
-    image = models.BinaryField(null=True, blank=True, editable=False)
-
-    def __str__(self):
-        return self.name
-    
-    def save_image(self, image):
-        image_io = io.BytesIO()
-        image.save(image_io, format='PNG')
-        self.image = image_io.getvalue()
-
-    def save(self, *args, **kwargs):
-        super(Rewards, self).save(*args, **kwargs)
+    image = models.ImageField(null=True, blank=True, upload_to='rewards')
 
 class UserRewards(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
