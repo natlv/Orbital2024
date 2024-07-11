@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -275,3 +276,19 @@ def send_message(request, item_id):
 def inbox(request):
     messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
     return render(request, 'inbox.html', {'messages': messages})
+
+@transaction.atomic
+def close_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    attendances = EventParticipants.objects.filter(event=event, attended=True)
+    
+    for attendance in attendances:
+        user = attendance.user
+        user_profile = UserProfile.objects.get(user=user)
+        # user_profile.points += 10
+        user_profile.save()
+    
+    event.delete()
+    
+    return redirect('home')
