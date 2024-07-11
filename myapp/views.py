@@ -292,3 +292,8 @@ def close_event(request, event_id):
     event.delete()
     
     return redirect('home')
+
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    event.delete()
+    return redirect('my_events')

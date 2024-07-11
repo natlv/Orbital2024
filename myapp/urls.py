@@ -2,7 +2,11 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
-from .views import EventCreateView, EventJoinView, ChosenEventJoinView, MyEventsView, RewardsView, profile, edit_profile, claim_reward, ChosenEventParticipantsView, update_attendance, profile_pic_view, item_image_view, close_event
+from .views import (
+    ChosenEventJoinView, ChosenEventParticipantsView, claim_reward, close_event,
+    delete_event, edit_profile, EventCreateView, EventJoinView, MyEventsView, 
+    item_image_view, profile, profile_pic_view, RewardsView, update_attendance
+)
 
 urlpatterns = [
     path('', views.index, name='home'),
@@ -13,6 +17,7 @@ urlpatterns = [
     path('event_join/', EventJoinView.as_view(), name='event_join'),
     path('event_join/<str:event_id>/', ChosenEventJoinView.as_view(), name='event_join_chosen'),
     path('my_events/', MyEventsView.as_view(), name='my_events'),
+    path('delete/<int:event_id>/', delete_event, name='delete_event'),
     path('event_participants/<str:event_id>/', ChosenEventParticipantsView.as_view(), name='event_participants_chosen'),
     path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
     path('marketplace/', views.marketplace, name='marketplace'),
