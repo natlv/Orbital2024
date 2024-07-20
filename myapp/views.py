@@ -21,14 +21,18 @@ def index(request):
 
 # signup page
 def user_signup(request):
+    error_message = None
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
+        else:
+            error_message = "Please correct the errors below."
     else:
         form = SignupForm()
-    return render(request, 'signup.html', {'form': form})
+
+    return render(request, 'signup.html', {'form': form, 'error_message': error_message})
 
 # login page
 def user_login(request):

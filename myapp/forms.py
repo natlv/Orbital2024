@@ -11,6 +11,18 @@ class SignupForm(UserCreationForm):
     class Meta:
         model = User 
         fields = ['username', 'password1', 'password2']
+        error_messages = {
+            'username': {
+                'required': "Please enter your username.",
+                'unique': "This username is already taken.",
+            },
+            'password1': {
+                'required': "Please enter a password.",
+            },
+            'password2': {
+                'required': "Please confirm your password.",
+            },
+        }
 
 class LoginForm(forms.Form):
     username = forms.CharField()

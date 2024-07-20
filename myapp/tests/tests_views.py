@@ -22,6 +22,79 @@ class HomeViewTest(TestCase):
         self.assertTemplateUsed(response, 'partials/_header.html')
         self.assertTemplateUsed(response, 'partials/_footer.html')
 
+class SignUpTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_signup_view(self):
+        signup_url = reverse('signup')
+
+        """Case 1: Valid signup data"""
+        valid_signup_data = {
+            'username': 'testuser',
+            'password1': 'password1234$',
+            'password2': 'password1234$',
+        }
+
+        response = self.client.post(signup_url, data=valid_signup_data)
+
+        self.assertEqual(response.status_code, 302)
+
+        login_url = reverse('login')
+        self.assertRedirects(response, login_url)
+
+        """Case 2: Missing field"""
+        invalid_signup_data = {
+            'username': '',
+            'password1': 'password1234$',
+            'password2': 'password1234$',
+        }
+
+        response = self.client.post(signup_url, data=invalid_signup_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please correct the errors below.')
+        
+        form = response.context['form']
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+
+        """Case 3: Password mismatch"""
+        invalid_signup_data_mismatch = {
+            'username': 'testuser1',
+            'password1': 'password123#',
+            'password2': 'password1234$',
+        }
+
+        response = self.client.post(signup_url, data=invalid_signup_data_mismatch)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please correct the errors below.')
+        
+        form = response.context['form']
+        self.assertFalse(form.is_valid())
+        self.assertIn('password2', form.errors)
+
+        """Case 4: Username already taken"""
+        invalid_signup_data_taken = {
+            'username': 'testuser',
+            'password1': 'password1234$',
+            'password2': 'password1234$',
+        }
+
+        response = self.client.post(signup_url, data=invalid_signup_data_taken)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please correct the errors below.')
+
+        form = response.context['form']
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+        self.assertContains(response, 'This username is already taken.')
+
+
 class LoginTest(TestCase):
 
     def setUp(self):
