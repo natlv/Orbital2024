@@ -21,14 +21,18 @@ def index(request):
 
 # signup page
 def user_signup(request):
+    error_message = None
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
+        else:
+            error_message = "Please correct the errors below."
     else:
         form = SignupForm()
-    return render(request, 'signup.html', {'form': form})
+
+    return render(request, 'signup.html', {'form': form, 'error_message': error_message})
 
 # login page
 def user_login(request):
@@ -70,8 +74,6 @@ class EventCreateView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         event_start = form.cleaned_data['event_start']
         event_end = form.cleaned_data['event_end']
-        if not event_end:
-            event_end = event_start
 
         event = Event.objects.create(
             creator=form.cleaned_data['creator'],
@@ -292,3 +294,8 @@ def close_event(request, event_id):
     event.delete()
     
     return redirect('home')
+
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    event.delete()
+    return redirect('my_events')

@@ -1,13 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
 <head>
+    <title>My Events</title>
     <link
         rel="preload"
         as="style"
         href="{% static 'css/style.css' %}"
         onload="this.rel = 'stylesheet'"
     />
+    <style>
+      .delete-button {
+          background-color: red;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 8px;
+      }
+
+      .delete-button:hover {
+          background-color: darkred;
+      }
+  </style>
 </head>
 <br>
 <h2>My Events</h2>
@@ -18,6 +39,9 @@
       <li>
         <a href="{% url 'event_participants_chosen' event.id %}">{{ event.event_name }}</a>
         - {{ event.event_start }} to {{ event.event_end }}
+        <form action="{% url 'delete_event' event.id %}" method="POST" style="display:inline;" onsubmit="return confirmDeleteEvent()">
+          {% csrf_token %}
+          <button type="submit" class="delete-button">Delete</button>
       </li>
     {% endfor %}
     {% if not created_events %}
@@ -44,4 +68,10 @@
       <p>You have not joined any events.</p>
     {% endif %}
   </ul>
+
+  <script>
+    function confirmDeleteEvent() {
+        return confirm('Are you sure you want to delete this event?')
+    }
+  </script>
 {% endblock %}

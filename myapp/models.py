@@ -61,7 +61,6 @@ class UserProfile(models.Model):
         super(UserProfile, self).save(*args, **kwargs)
 
 class Rewards(models.Model):
-    points = models.IntegerField(default=20)
     name = models.CharField(max_length=100)
     description = models.TextField()
     points_cost = models.IntegerField()
