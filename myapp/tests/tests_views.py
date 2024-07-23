@@ -269,14 +269,14 @@ class MyEventsViewTest(TestCase):
         #Join an event
         self.client.post(reverse('event_join_chosen', args=[self.joined_event.event_id]), form_data)
 
-        @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-        def test_my_events_view(self):
-            response = self.client.get(reverse('my_events'))
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, 'my_events.html')
-            self.assertIn('created_events', response.context)
-            self.assertIn('joined_events', response.context)
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_my_events_view(self):
+        response = self.client.get(reverse('my_events'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_events.html')
+        self.assertIn('created_events', response.context)
+        self.assertIn('joined_events', response.context)
 
-            self.assertQuerysetEqual(response.context['created_events'], map(repr, Event.objects.filter(creator=self.user)))
-            self.assertQuerysetEqual(response.context['joined_events'], map(repr, [self.joined_event]))
+        self.assertQuerysetEqual(response.context['created_events'], map(repr, Event.objects.filter(creator=self.user.username)))
+        self.assertQuerysetEqual(response.context['joined_events'], map(repr, [self.joined_event]))
     
