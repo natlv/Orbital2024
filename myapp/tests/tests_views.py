@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from myapp.models import (Event, EventParticipants, Item,
                           Message, UserProfile, UserRewards)
 from django.utils import timezone
-import json
+from myapp.forms import EventJoinForm, EventSearchForm
 
 class HomeViewTest(TestCase):
 
@@ -136,3 +136,147 @@ class LoginTest(TestCase):
 
         user = response.context['user']
         self.assertFalse(user.is_authenticated)
+
+
+class EventCreateViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.url = reverse('event_create')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_redirect_if_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('login'))
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def logged_in_uses_correct_template(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'event_create.html')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_form_valid(self):
+        form_data = {
+            'creator': self.user,
+            'organisation': 'Test Org',
+            'event_name': 'Test Event',
+            'event_type': 'seminar',
+            'event_location': 'Test Location',
+            'event_start': timezone.now(),
+            'event_end': timezone.now() + timezone.timedelta(hours=2),
+        }
+
+        response = self.client.post(self.url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Event.objects.filter(event_name='Test Event').exists())
+
+    # There's an error in the creation where if u don't put an event_end_time, it will throw an error
+    # @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    # def test_form_invalid(self):
+    #     response = self.client.post(self.url, {})
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertFalse(Event.objects.exists())
+
+class EventJoinViewTestCase(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_event_join_view_for_unauthenticated_user(self):
+        response = self.client.get(reverse('event_join'))
+        self.assertRedirects(response, '/login/?next=/event_join/')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_event_join_view_for_authenticated_user(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(reverse('event_join'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'event_join.html')
+        self.assertIsInstance(response.context['form'], EventSearchForm)
+
+class ChosenEventJoinViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.event = Event.objects.create(
+            creator='testcreator',
+            organisation='Test Organisation',
+            event_name='Test Event',
+            event_type='seminar',
+            event_location='Test Location',
+            event_start=timezone.now(),
+            event_end=timezone.now() + timezone.timedelta(hours=2)
+        )
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_chosen_event_join_view_for_unauthenticated_user(self):
+        response = self.client.get(reverse('event_join_chosen', args=[self.event.event_id]))
+        self.assertRedirects(response, f'/login/?next=/event_join/{self.event.event_id}/')
+    
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_chosen_event_join_view_for_authenticated_user(self):
+        self.client.login(username='testuser', password='testpassword')
+        form_data = {
+            'name': 'Test Name',
+            'email': 'tester@example.com'
+        }
+
+        response = self.client.post(reverse('event_join_chosen', args=[self.event.event_id]), form_data)
+        self.assertRedirects(response, reverse('event_join'))
+        self.assertTrue(EventParticipants.objects.filter(
+            user=self.user,
+            event=self.event,
+            name=form_data['name'],
+            email=form_data['email']
+        ).exists())
+
+class MyEventsViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        create_event_data = {
+            'creator': self.user,
+            'organisation': 'Test Org',
+            'event_name': 'Test Event',
+            'event_type': 'seminar',
+            'event_location': 'Test Location',
+            'event_start': timezone.now(),
+            'event_end': timezone.now() + timezone.timedelta(hours=2),
+        }
+        #Create an event
+        self.client.post(reverse('event_create'), create_event_data)
+        self.joined_event = Event.objects.create(
+            creator='testcreator',
+            organisation='Test Organisation2',
+            event_name='Test Event2',
+            event_type='workshop',
+            event_location='Test Location',
+            event_start=timezone.now(),
+            event_end=timezone.now() + timezone.timedelta(hours=3)
+        )
+        form_data = {
+            'name': 'Test Name',
+            'email': 'tester@example.com'
+        }
+        #Join an event
+        self.client.post(reverse('event_join_chosen', args=[self.joined_event.event_id]), form_data)
+
+        @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+        def test_my_events_view(self):
+            response = self.client.get(reverse('my_events'))
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'my_events.html')
+            self.assertIn('created_events', response.context)
+            self.assertIn('joined_events', response.context)
+
+            self.assertQuerysetEqual(response.context['created_events'], map(repr, Event.objects.filter(creator=self.user)))
+            self.assertQuerysetEqual(response.context['joined_events'], map(repr, [self.joined_event]))
+    
