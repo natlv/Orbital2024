@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from myapp.models import (Event, EventParticipants, Item,
                           Message, UserProfile, UserRewards)
 from django.utils import timezone
-from myapp.forms import EventJoinForm, EventSearchForm
+from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
+from io import BytesIO
+from PIL import Image
 
 class HomeViewTest(TestCase):
 
@@ -253,6 +255,7 @@ class MyEventsViewTest(TestCase):
         }
         #Create an event
         self.client.post(reverse('event_create'), create_event_data)
+        self.created_event = Event.objects.get(creator=self.user.username)
         self.joined_event = Event.objects.create(
             creator='testcreator',
             organisation='Test Organisation2',
@@ -269,14 +272,67 @@ class MyEventsViewTest(TestCase):
         #Join an event
         self.client.post(reverse('event_join_chosen', args=[self.joined_event.event_id]), form_data)
 
-        @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-        def test_my_events_view(self):
-            response = self.client.get(reverse('my_events'))
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, 'my_events.html')
-            self.assertIn('created_events', response.context)
-            self.assertIn('joined_events', response.context)
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_my_events_view(self):
+        response = self.client.get(reverse('my_events'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_events.html')
+        self.assertIn('created_events', response.context)
+        self.assertIn('joined_events', response.context)
 
-            self.assertQuerysetEqual(response.context['created_events'], map(repr, Event.objects.filter(creator=self.user)))
-            self.assertQuerysetEqual(response.context['joined_events'], map(repr, [self.joined_event]))
+        self.assertQuerysetEqual(response.context['created_events'], map(repr, [self.created_event]))
+        self.assertIn(self.joined_event, response.context['joined_events'])
     
+class ProfileViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.user_profile = UserProfile.objects.create(user=self.user, bio='This is a bio')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_profile_view(self):
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'profile.html')
+        self.assertIn('profile', response.context)
+        self.assertEqual(response.context['profile'], self.user_profile)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_profile_pic_view(self):
+        image = Image.new('RGB', (100, 100), color='red')
+        self.user_profile.save_profile_pic(image)
+        self.user_profile.save()
+
+        response = self.client.get(reverse('profile_pic', args=[self.user.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/png')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_edit_profile_view_get(self):
+        response = self.client.get(reverse('edit_profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'edit_profile.html')
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], ProfileForm)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_edit_profile_view_post(self):
+        form_data = {
+            'bio': 'Updated bio',
+            'location': 'Test location',
+            'birth_date': '1999-01-01',
+        }
+
+        image = Image.new('RGB', (100, 100), color='blue')
+
+        form_data['profile_pic'] = image
+
+        response = self.client.post(reverse('edit_profile'), form_data)
+        self.assertRedirects(response, reverse('profile'))
+
+        self.user_profile.refresh_from_db()
+        self.assertEqual(self.user_profile.bio, form_data['bio'])
+        self.assertEqual(self.user_profile.location, form_data['location'])
+        self.assertEqual(self.user_profile.birth_date.strftime('%Y-%m-%d'), form_data['birth_date'])
