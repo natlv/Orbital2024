@@ -2,7 +2,7 @@ from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from myapp.models import (Event, EventParticipants, Item,
-                          Message, UserProfile, UserRewards)
+                          Message, Rewards, UserProfile)
 from django.utils import timezone
 from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
 from io import BytesIO
@@ -176,12 +176,11 @@ class EventCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Event.objects.filter(event_name='Test Event').exists())
 
-    # There's an error in the creation where if u don't put an event_end_time, it will throw an error
-    # @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-    # def test_form_invalid(self):
-    #     response = self.client.post(self.url, {})
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertFalse(Event.objects.exists())
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_form_invalid(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Event.objects.exists())
 
 class EventJoinViewTestCase(TestCase):
 
@@ -336,3 +335,15 @@ class ProfileViewTests(TestCase):
         self.assertEqual(self.user_profile.bio, form_data['bio'])
         self.assertEqual(self.user_profile.location, form_data['location'])
         self.assertEqual(self.user_profile.birth_date.strftime('%Y-%m-%d'), form_data['birth_date'])
+
+
+class RewardsViewTests(TestCase):
+    def setup(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.reward = Rewards.objects.create(
+            name='Test Reward', 
+            description='Test Description', 
+            points_cost=10
+        )

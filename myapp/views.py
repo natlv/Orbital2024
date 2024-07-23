@@ -74,8 +74,6 @@ class EventCreateView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         event_start = form.cleaned_data['event_start']
         event_end = form.cleaned_data['event_end']
-        if not event_end:
-            event_end = event_start
 
         event = Event.objects.create(
             creator=form.cleaned_data['creator'],

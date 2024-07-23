@@ -56,6 +56,13 @@ class EventCreateForm(forms.Form):
         if event_start and event_end and event_end < event_start:
             raise forms.ValidationError("Event end time cannot be before the start time.")
         
+        if not event_start:
+            raise forms.ValidationError("Event start time is required.")
+        
+        elif not event_end:
+            event_end = event_start
+            cleaned_data['event_end'] = event_end
+        
         if event_end < timezone.now():
             raise forms.ValidationError("Event end time cannot be before the current date and time.")
 
