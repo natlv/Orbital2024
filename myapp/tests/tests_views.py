@@ -5,7 +5,6 @@ from myapp.models import (Event, EventParticipants, Item,
                           Message, Rewards, UserProfile)
 from django.utils import timezone
 from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
-from io import BytesIO
 from PIL import Image
 
 class HomeViewTest(TestCase):
@@ -163,7 +162,7 @@ class EventCreateViewTest(TestCase):
     @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
     def test_form_valid(self):
         form_data = {
-            'creator': self.user,
+            'creator': self.user.username,
             'organisation': 'Test Org',
             'event_name': 'Test Event',
             'event_type': 'seminar',
