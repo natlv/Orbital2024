@@ -1,4 +1,4 @@
-from decouple import config, Csv
+# from decouple import config, Csv
 from pathlib import Path
 import os
 import dj_database_url
