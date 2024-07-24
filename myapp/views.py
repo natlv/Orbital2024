@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -11,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from .forms import SignupForm, LoginForm, EventCreateForm, EventJoinForm, EventSearchForm, ProfileForm, ItemForm, MessageForm
-from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item, Message
+from .models import Event, UserProfile, Rewards, EventParticipants, UserRewards, Item, Thread, Message
 
 
 
@@ -255,10 +256,12 @@ def item_image_view(request, item_id):
     if item.image:
         return HttpResponse(item.image, content_type="image/png")
 
+@login_required
 def marketplace(request):
     items = Item.objects.all()
     return render(request, 'marketplace.html', {'items': items})
 
+@login_required
 def send_message(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     if request.method == 'POST':
@@ -274,10 +277,75 @@ def send_message(request, item_id):
         form = MessageForm()
     return render(request, 'send_message.html', {'form': form, 'item': item})
 
-@login_required
-def inbox(request):
-    messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
-    return render(request, 'inbox.html', {'messages': messages})
+# @login_required
+# def thread_detail(request, thread_id):
+#     thread = get_object_or_404(Thread, id=thread_id, participants=request.user)
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.thread = thread
+#             message.sender = request.user
+#             message.save()
+#             thread.updated_at = message.created_at
+#             thread.save()
+#             return redirect('thread_detail', thread_id=thread.id)
+#     else:
+#         form = MessageForm()
+#     messages = thread.message_set.all()
+#     return render(request, 'thread_detail.html', {'thread': thread, 'messages': messages, 'form': form})
+
+# @login_required
+# def inbox(request):
+#     threads = Thread.objects.filter(participants=request.user).order_by('-updated_at')
+#     return render(request, 'inbox.html', {'threads': threads})
+
+# def contact_seller(request, seller_id):
+#     seller = get_object_or_404(User, id=seller_id)
+#     thread, created = Thread.objects.get_or_create()
+
+#     if not created:
+#         thread.participants.add(seller)
+#     else:
+#         thread.participants.add(request.user, seller)
+
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.thread = thread
+#             message.sender = request.user
+#             message.save()
+#             thread.updated_at = message.created_at
+#             thread.save()
+#             return redirect('thread_detail', thread_id=thread.id)
+#     else:
+#         form = MessageForm()
+#     return render(request, 'contact_seller.html', {'form': form, 'seller': seller})
+
+# def contact_event_creator(request, event_id):
+#     event = get_object_or_404(Event, id=event_id)
+#     creator = event.creator
+#     thread, created = Thread.objects.get_or_create()
+
+#     if not created:
+#         thread.participants.add(creator)
+#     else:
+#         thread.participants.add(request.user, creator)
+
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.thread = thread
+#             message.sender = request.user
+#             message.save()
+#             thread.updated_at = message.created_at
+#             thread.save()
+#             return redirect('thread_detail', thread_id=thread.id)
+#     else:
+#         form = MessageForm()
+#     return render(request, 'contact_event_creator.html', {'form': form, 'event': event})
 
 @transaction.atomic
 def close_event(request, event_id):

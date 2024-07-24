@@ -91,12 +91,13 @@ class Item(models.Model):
         self.image = image_io.getvalue()
 
     
-class Message(models.Model):
-    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
-    recipient = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+# class Thread(models.Model):
+#     participants = models.ManyToManyField(User, related_name='threads')
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f'Message from {self.sender} to {self.recipient} about {self.item.name}'
+# class Message(models.Model):
+#     thread = models.ForeignKey(Thread, related_name='messages', on_delete=models.CASCADE, default=1)
+#     sender = models.ForeignKey(User, related_name='messages', on_delete=models.CASCADE)
+#     text = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Event, UserProfile, Item, Message
+from .models import UserProfile, Item, Message
 from PIL import Image
 import io
 
@@ -125,10 +125,10 @@ class ItemForm(forms.ModelForm):
             instance.save()
         return instance
 
-class MessageForm(forms.ModelForm):
-    class Meta:
-        model = Message
-        fields = ['message']
-        widgets = {
-            'message': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
-        }
+# class MessageForm(forms.ModelForm):
+#     class Meta:
+#         model = Message
+#         fields = ['text']
+#         widgets = {
+#             'text': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Type your message...'}),
+#         }

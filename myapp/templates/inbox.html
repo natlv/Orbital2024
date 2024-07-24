@@ -3,13 +3,14 @@
 {% block content %}
 <h1>Inbox</h1>
 <div class="messages">
-    {% for message in messages %}
-    <div class="message">
-        <p>From: {{ message.sender.username }}</p>
-        <p>About: {{ message.item.name }}</p>
-        <p>Message: {{ message.message }}</p>
-        <p>Received: {{ message.timestamp }}</p>
-    </div>
+    {% for thread in threads %}
+        <li>
+            <!-- <a href="{% url 'thread_detail' thread.id %}">
+                Conversation with {{ thread.participants.exclude(id=request.user.id).first.username }}
+            </a> -->
+        </li>
+    {% empty %}
+        <li>No messages.</li>
     {% endfor %}
 </div>
 {% endblock %}

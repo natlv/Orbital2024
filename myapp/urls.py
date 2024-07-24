@@ -5,7 +5,8 @@ from . import views
 from .views import (
     ChosenEventJoinView, ChosenEventParticipantsView, claim_reward, close_event,
     delete_event, edit_profile, EventCreateView, EventJoinView, MyEventsView, 
-    item_image_view, profile, profile_pic_view, RewardsView, update_attendance
+    item_image_view, profile, profile_pic_view, RewardsView, update_attendance, 
+    inbox, thread_detail, contact_seller, contact_event_creator
 )
 
 urlpatterns = [
@@ -22,8 +23,12 @@ urlpatterns = [
     path('update_attendance/<str:event_id>/', update_attendance, name='update_attendance'),
     path('marketplace/', views.marketplace, name='marketplace'),
     path('marketplace/sell/', views.marketplace_sell, name='marketplace_sell'),
-    path('message/send/<int:item_id>/', views.send_message, name='send_message'),
-    path('inbox/', views.inbox, name='inbox'),
+    # path('message/send/<int:item_id>/', views.send_message, name='send_message'),
+
+    # path('inbox/', inbox, name='inbox'),
+    # path('thread/<int:thread_id>/', thread_detail, name='thread_detail'),
+    # path('contact_seller/<int:seller_id>/', contact_seller, name='contact_seller'),
+    # path('contact_event_creator/<int:event_id>/', contact_event_creator, name='contact_event_creator'),
     path('rewards/', RewardsView.as_view(), name='rewards'),
     path('claim_reward/<int:reward_id>/', claim_reward, name='claim_reward'),
     path('profile/', profile, name='profile'),
