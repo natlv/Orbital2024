@@ -192,16 +192,20 @@ def edit_profile(request):
 
 @login_required
 def claim_reward(request, reward_id):
-    profile = get_object_or_404(UserProfile, user=request.user)
-    reward = get_object_or_404(Rewards, id=reward_id)
+    try:
+        profile = get_object_or_404(UserProfile, user=request.user)
+        reward = get_object_or_404(Rewards, id=reward_id)
 
-    if profile.points >= reward.points_cost:
-        profile.points -= reward.points_cost
-        UserRewards.objects.create(user=request.user, reward=reward)
-        profile.save()
-        messages.success(request, f'You have successfully claimed {reward.name}!')
-    else:
-        messages.error(request, 'You do not have enough points to claim this reward.')
+        if profile.points >= reward.points_cost:
+            profile.points -= reward.points_cost
+            UserRewards.objects.create(user=request.user, reward=reward)
+            profile.save()
+            messages.success(request, f'You have successfully claimed {reward.name}!')
+        else:
+            messages.error(request, 'You do not have enough points to claim this reward.')
+    except Exception as e:
+        print(f"Error claiming reward: {e}")
+        messages.error(request, 'An error occurred while claiming the reward. Please try again later.')
 
     return redirect('rewards')
 

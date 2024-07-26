@@ -1,6 +1,12 @@
 from django.utils import timezone
 from django.test import TestCase
-from myapp.forms import EventCreateForm, LoginForm, SignupForm
+from myapp.forms import (EventCreateForm, 
+                         EventJoinForm, 
+                         EventSearchForm,
+                         ItemForm,
+                         LoginForm,
+                         ProfileForm, 
+                         SignupForm)
 
 class TestSignupForm(TestCase):
 
@@ -33,7 +39,7 @@ class TestLoginForm(TestCase):
         form = LoginForm(data = {})
 
         self.assertFalse(form.is_valid())
-        self.assertEquals(len(form.errors), 2)
+        self.assertEqual(len(form.errors), 2)
     
     def test_login_form_no_username(self):
         form = LoginForm(data = {
@@ -74,6 +80,8 @@ class TestEventCreateForm(TestCase):
         form = EventCreateForm(data = {}, request=self.request)
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 7)
+        self.assertIn("Event start time is required.",
+                      form.errors['__all__'])
 
     def test_event_create_form_end_before_start(self):
         data = self.valid_data
@@ -82,3 +90,113 @@ class TestEventCreateForm(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('Event end time cannot be before the start time.', 
                       form.errors['__all__'])
+        
+class TestEventJoinForm(TestCase):
+
+    def test_event_join_form_valid_data(self):
+        form = EventJoinForm(data = {
+            'name': 'John Doe',
+            'email': 'johndoe@example.com'
+        })
+
+        self.assertTrue(form.is_valid())
+
+    def test_event_join_form_no_data(self):
+        form = EventJoinForm(data = {})
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 2)
+
+class TestEventSearchForm(TestCase):
+    
+    def test_event_search_form_valid_data(self):
+        form = EventSearchForm(data = {
+            'query': 'test',
+            'event_type': 'cleanup',
+        })
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_event_search_form_no_data(self):
+        form = EventSearchForm(data = {})
+    
+        self.assertTrue(form.is_valid())
+
+class TestProfileForm(TestCase):
+    
+    def test_profile_form_valid_data(self):
+        form = ProfileForm(data = {
+            'bio': 'Test bio',
+            'location': 'Test location',
+            'birth_date': '1990-01-01',
+        })
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_profile_form_no_data(self):
+        form = ProfileForm(data = {})
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_profile_form_no_bio(self):
+        form = ProfileForm(data = {
+            'bio': '',
+            'location': 'Test location',
+            'birth_date': '1990-01-01',
+        })
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_profile_form_no_location(self):
+        form = ProfileForm(data = {
+            'bio': 'Test bio',
+            'location': '',
+            'birth_date': '1990-01-01',
+        })
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_profile_form_no_birth_date(self):
+        form = ProfileForm(data = {
+            'bio': 'Test bio',
+            'location': 'Test location',
+            'birth_date': '',
+        })
+    
+        self.assertTrue(form.is_valid())
+    
+    def test_profile_form_invalid_birth_date(self):
+        form = ProfileForm(data = {
+            'bio': 'Test bio',
+            'location': 'Test location',
+            'birth_date': '01-01-1990',
+        })
+    
+        self.assertFalse(form.is_valid())
+        self.assertIn('birth_date', form.errors)
+    
+    def test_profile_form_future_birth_date(self):
+        form = ProfileForm(data = {
+            'bio': 'Test bio',
+            'location': 'Test location',
+            'birth_date': timezone.now().date() + timezone.timedelta(days=1),
+        })
+    
+        self.assertFalse(form.is_valid())
+        self.assertIn('birth_date', form.errors)
+
+class TestItemForm(TestCase):
+    def test_item_form_valid_data(self):
+        form = ItemForm(data = {
+            'name': 'Test Item',
+            'description': 'Test description',
+            'price': 100,
+        })
+    
+        self.assertTrue(form.is_valid())
+
+    def test_item_form_no_data(self):
+        form = ItemForm(data = {})
+    
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 3)
