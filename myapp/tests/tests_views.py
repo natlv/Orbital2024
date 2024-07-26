@@ -31,6 +31,7 @@ class HomeViewTest(TestCase):
         self.assertTemplateUsed(response, 'partials/_header.html')
         self.assertTemplateUsed(response, 'partials/_footer.html')
 
+
 class SignUpTest(TestCase):
 
     def setUp(self):
@@ -170,7 +171,7 @@ class EventCreateViewTest(TestCase):
     @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
     def test_form_valid(self):
         form_data = {
-            'creator': self.user,
+            'creator': self.user.username,
             'organisation': 'Test Org',
             'event_name': 'Test Event',
             'event_type': 'seminar',
@@ -188,6 +189,7 @@ class EventCreateViewTest(TestCase):
         response = self.client.post(self.url, {})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Event.objects.exists())
+
 
 class EventJoinViewTestCase(TestCase):
 
@@ -207,6 +209,7 @@ class EventJoinViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'event_join.html')
         self.assertIsInstance(response.context['form'], EventSearchForm)
+
 
 class ChosenEventJoinViewTestCase(TestCase):
 
@@ -245,6 +248,7 @@ class ChosenEventJoinViewTestCase(TestCase):
             email=form_data['email']
         ).exists())
 
+
 class MyEventsViewTest(TestCase):
 
     def setUp(self):
@@ -252,7 +256,7 @@ class MyEventsViewTest(TestCase):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
         create_event_data = {
-            'creator': self.user,
+            'creator': self.user.username,
             'organisation': 'Test Org',
             'event_name': 'Test Event',
             'event_type': 'seminar',
@@ -290,6 +294,7 @@ class MyEventsViewTest(TestCase):
         self.assertQuerysetEqual(response.context['created_events'], map(repr, [self.created_event]))
         self.assertIn(self.joined_event, response.context['joined_events'])
     
+
 class ProfileViewTests(TestCase):
 
     def setUp(self):
@@ -408,3 +413,57 @@ class RewardsViewTests(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'You do not have enough points to claim this reward.')
+
+
+class AttendanceViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user1 = User.objects.create_user(username='testuser1', password='password1234$')
+        self.user2 = User.objects.create_user(username='testuser2', password='password12345%')
+        self.user3 = User.objects.create_user(username='testuser3', password='password123456#')
+        self.client.login(username='testuser1', password='password1234$')
+        event_data = {
+            'creator': self.user1.username,
+            'organisation': 'Test Org',
+            'event_name': 'Test Event',
+            'event_type': 'seminar',
+            'event_location': 'Test Location',
+            'event_start': timezone.now(),
+            'event_end': timezone.now() + timezone.timedelta(hours=2)
+        }
+        self.client.post(reverse('event_create'), event_data)
+        self.event = Event.objects.get(creator=self.user1.username)
+
+        self.participant2 = EventParticipants.objects.create(
+            user=self.user2, 
+            event=self.event, 
+            name='Tester2'
+        )
+        self.participant3 = EventParticipants.objects.create(
+            user=self.user3, 
+            event=self.event, 
+            name='Tester3'
+        )
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_chosen_event_participant_view(self):
+        response = self.client.get(reverse('event_participants_chosen', args=[self.event.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'event_participants.html')
+        self.assertIn('participants', response.context)
+        self.assertIn(self.participant2, response.context['participants'])
+        self.assertIn(self.participant3, response.context['participants'])
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_update_attendance_view(self):
+        attendance_data = {
+            f'attended_{self.participant2.id}': 'on',
+        }
+
+        response = self.client.post(reverse('update_attendance', args=[self.event.id]), attendance_data)
+        self.assertRedirects(response, reverse('event_participants_chosen', args=[self.event.id]))
+
+        self.participant2.refresh_from_db()
+        self.assertTrue(self.participant2.attended)
+        self.assertFalse(self.participant3.attended)
