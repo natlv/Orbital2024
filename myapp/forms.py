@@ -94,6 +94,12 @@ class ProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['bio', 'location', 'birth_date']  
 
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data.get('birth_date')
+        if birth_date and birth_date > timezone.now().date():
+            raise ValidationError("Birth date cannot be in the future.")
+        return birth_date
+
     def save(self, commit=True):
         instance = super(ProfileForm, self).save(commit=False)
         upload_pic = self.cleaned_data.get('upload_pic')

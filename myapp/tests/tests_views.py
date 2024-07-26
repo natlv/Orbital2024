@@ -1,8 +1,15 @@
 from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
-from myapp.models import (Event, EventParticipants, Item,
-                          Message, Rewards, UserProfile)
+from django.contrib.messages import get_messages
+from django.core.files.uploadedfile import SimpleUploadedFile
+from myapp.models import (Event, 
+                          EventParticipants, 
+                          Item,
+                          Message, 
+                          Rewards, 
+                          UserProfile,
+                          UserRewards)
 from django.utils import timezone
 from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
 from io import BytesIO
@@ -202,6 +209,7 @@ class EventJoinViewTestCase(TestCase):
         self.assertIsInstance(response.context['form'], EventSearchForm)
 
 class ChosenEventJoinViewTestCase(TestCase):
+
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
@@ -338,12 +346,65 @@ class ProfileViewTests(TestCase):
 
 
 class RewardsViewTests(TestCase):
-    def setup(self):
+
+    def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.client.login(username='testuser', password='password')
-        self.reward = Rewards.objects.create(
+        self.user = User.objects.create_user(username='testuser', password='password1234$')
+        self.client.login(username='testuser', password='password1234$')
+        self.user_profile = UserProfile.objects.create(user=self.user, bio='This is a bio')
+
+        self.image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('myapp/tests/test_image.jpg', 'rb').read(),
+            content_type='image/jpeg'
+        )
+
+        self.cheap_reward = Rewards.objects.create(
             name='Test Reward', 
             description='Test Description', 
-            points_cost=10
+            points_cost=20,
+            image=self.image
         )
+
+        self.expensive_reward = Rewards.objects.create(
+            name='Test Reward2', 
+            description='Test Description2', 
+            points_cost=100,
+            image=self.image
+        )
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_rewards_view(self):
+        response = self.client.get(reverse('rewards'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'rewards.html')
+        self.assertIn('rewards', response.context)
+        self.assertQuerysetEqual(response.context['rewards'], 
+                                 map(repr, [self.cheap_reward, self.expensive_reward]),
+                                 ordered=False)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_claim_reward_view_success(self):
+        response = self.client.post(reverse('claim_reward', args=[self.cheap_reward.id]))
+        self.assertRedirects(response, reverse('rewards'))
+
+        self.user_profile.refresh_from_db()
+        self.assertEqual(self.user_profile.points, 0)
+        self.assertTrue(UserRewards.objects.filter(user=self.user, reward=self.cheap_reward).exists())
+        
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), f'You have successfully claimed {self.cheap_reward.name}!')
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_claim_reward_view_unsuccessful(self):
+        response = self.client.post(reverse('claim_reward', args=[self.expensive_reward.id]))
+        self.assertRedirects(response, reverse('rewards'))
+
+        self.user_profile.refresh_from_db()
+        self.assertEqual(self.user_profile.points, 20)
+        self.assertFalse(UserRewards.objects.filter(user=self.user, reward=self.expensive_reward).exists())
+        
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'You do not have enough points to claim this reward.')
