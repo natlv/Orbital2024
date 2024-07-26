@@ -12,7 +12,6 @@ from myapp.models import (Event,
                           UserRewards)
 from django.utils import timezone
 from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
-from io import BytesIO
 from PIL import Image
 
 class HomeViewTest(TestCase):
