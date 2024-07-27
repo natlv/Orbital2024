@@ -30,7 +30,7 @@ class LoginForm(forms.Form):
 
 class EventCreateForm(forms.Form):
     organisation = forms.CharField(label="Your organisation", max_length=150)
-    email = forms.EmailField(label="Your email")
+    # email = forms.EmailField(label="Your email")
     event_name = forms.CharField(label="Name of event", max_length=150)
     event_type = forms.ChoiceField(choices=[
         ('cleanup', 'Environmental Clean-up'),
