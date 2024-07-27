@@ -27,6 +27,7 @@ class Event(models.Model):
     event_start = models.DateTimeField(default=timezone.now)
     event_end = models.DateTimeField(default=timezone.now)
     participants = models.ManyToManyField(User, related_name='joined_events', blank=True)
+    is_closed = models.BooleanField(default=False)
     
     def __str__(self):
         return self.event_name

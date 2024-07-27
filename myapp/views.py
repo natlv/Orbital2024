@@ -295,7 +295,8 @@ def close_event(request, event_id):
         # user_profile.points += 10
         user_profile.save()
     
-    event.delete()
+    event.is_closed = True
+    event.save()
     
     return redirect('home')
 
