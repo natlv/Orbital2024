@@ -81,6 +81,7 @@ class EventCreateView(LoginRequiredMixin, FormView):
             event_name=form.cleaned_data['event_name'],
             event_type=form.cleaned_data['event_type'],
             event_location=form.cleaned_data['event_location'],
+            email=form.cleaned_data['email'],
             event_start=event_start,
             event_end=event_end
         )
