@@ -2,7 +2,6 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from PIL import Image
 import io
 
 # For generating unique event id

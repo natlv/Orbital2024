@@ -56,7 +56,11 @@
 <div class="items">
     {% for item in items %}
     <div class="item">
-        <img src="{% url 'item_image' item.id %}" alt="{{ item.name }}" style="width:100px;height:100px;">
+        {% if item.image %}
+            <img src="{% url 'item_image' item.id %}" alt="{{ item.name }}" style="width:100px;height:100px;">
+        {% else %}
+            <img src="{% static 'img/default_item_image.png' %}" alt="Default Item Image" style="width:100px;height:100px;">
+        {% endif %}
         <h2 class="name">{{ item.name }}</h2>
         <p class="description">{{ item.description }}</p>
         <p>${{ item.price }}</p>
