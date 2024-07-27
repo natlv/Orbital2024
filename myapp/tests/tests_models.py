@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from myapp.models import Item, UserProfile
+from myapp.models import Item, Message, UserProfile
 from PIL import Image
 
 class TestUserProfile(TestCase):
@@ -60,3 +60,38 @@ class TestItem(TestCase):
     def tearDown(self):
         self.user.delete()
         self.item.delete()
+
+class TestMessage(TestCase):
+
+    def setUp(self):
+        self.sender = User.objects.create_user(username='sender', password='password')
+        self.recipient = User.objects.create_user(username='recipient', password='password')
+        
+        self.item = Item.objects.create(
+            name='Test Item',
+            description='Test Description',
+            price=10.0,
+            seller=self.sender,
+        )
+
+        self.message = Message.objects.create(
+            sender=self.sender,
+            recipient=self.recipient,
+            item=self.item,
+            email='test@example.com',
+            message='This is a test message.'
+        )
+
+    def test_message_creation(self):
+        self.assertEqual(str(self.message), f'Message from {self.sender} to {self.recipient} about {self.item.name}')
+        self.assertEqual(self.message.sender.username, 'sender')
+        self.assertEqual(self.message.recipient.username, 'recipient')
+        self.assertEqual(self.message.item.name, 'Test Item')
+        self.assertEqual(self.message.email, 'test@example.com')
+        self.assertEqual(self.message.message, 'This is a test message.')
+
+    def tearDown(self):
+        self.message.delete()
+        self.item.delete()
+        self.sender.delete()
+        self.recipient.delete()
