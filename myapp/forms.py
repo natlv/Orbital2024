@@ -30,6 +30,7 @@ class LoginForm(forms.Form):
 
 class EventCreateForm(forms.Form):
     organisation = forms.CharField(label="Your organisation", max_length=150)
+    email = forms.EmailField(label="Your email")
     event_name = forms.CharField(label="Name of event", max_length=150)
     event_type = forms.ChoiceField(choices=[
         ('cleanup', 'Environmental Clean-up'),
@@ -132,9 +133,11 @@ class ItemForm(forms.ModelForm):
         return instance
 
 class MessageForm(forms.ModelForm):
+    email = forms.EmailField(label="Your email")
+
     class Meta:
         model = Message
-        fields = ['message']
+        fields = ['message', 'email']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
         }
