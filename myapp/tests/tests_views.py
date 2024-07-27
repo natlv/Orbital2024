@@ -11,7 +11,7 @@ from myapp.models import (Event,
                           UserProfile,
                           UserRewards)
 from django.utils import timezone
-from myapp.forms import EventJoinForm, EventSearchForm, ProfileForm
+from myapp.forms import EventSearchForm, ItemForm, ProfileForm
 from PIL import Image
 
 class HomeViewTest(TestCase):
@@ -466,3 +466,70 @@ class AttendanceViewTests(TestCase):
         self.participant2.refresh_from_db()
         self.assertTrue(self.participant2.attended)
         self.assertFalse(self.participant3.attended)
+
+
+class MarketplaceViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='password1234$')
+        self.client.login(username='testuser', password='password1234$')
+
+        item_image = Image.new('RGB', (100, 100), color='blue')
+        self.listed_item_with_image = Item.objects.create(
+            seller=self.user,
+            name='Test Item1',
+            description='Test Description',
+            price=20,
+        )
+        self.listed_item_with_image.save_image(item_image)
+        self.listed_item_with_image.save()
+        self.listed_item_without_image = Item.objects.create(
+            seller=self.user,
+            name='Test Item2',
+            description='Test Description2',
+            price=10,
+        )
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_marketplace_view(self):
+        response = self.client.get(reverse('marketplace'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'marketplace.html')
+        self.assertIn('items', response.context)
+        self.assertQuerysetEqual(response.context['items'], 
+                                 map(repr, [self.listed_item_with_image, self.listed_item_without_image]), 
+                                 ordered=False)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_marketplace_sell_view_valid(self):
+        item_image = Image.new('RGB', (100, 100), color='red')
+        form_data = {
+            'name': 'Test Item3',
+            'description': 'Test Description2',
+            'price': 30,
+            'image': item_image
+        }
+
+        response = self.client.post(reverse('marketplace_sell'), form_data)
+        self.assertRedirects(response, reverse('marketplace'))
+
+        self.assertTrue(Item.objects.filter(seller=self.user, name='Test Item3').exists())
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_marketplace_sell_view_invalid(self):
+        form_data = {
+            'name': 'Test Item4'
+        }
+
+        response = self.client.post(reverse('marketplace_sell'), form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Item.objects.filter(seller=self.user, name='Test Item4').exists())
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], ItemForm)
+
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+    def test_item_image_view(self):
+        response = self.client.get(reverse('item_image', args=[self.listed_item_with_image.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/png')

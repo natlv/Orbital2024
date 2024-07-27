@@ -238,8 +238,12 @@ def update_attendance(request, event_id):
         participants = EventParticipants.objects.filter(event_id=event_id)
         return render(request, 'event_participants.html', {'participants': participants, 'event_id': event_id})
     
-    
 # show marketplace for eco-friendly services
+
+def marketplace(request):
+    items = Item.objects.all()
+    return render(request, 'marketplace.html', {'items': items})
+
 @login_required
 def marketplace_sell(request):
     if request.method == 'POST':
@@ -258,10 +262,6 @@ def item_image_view(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     if item.image:
         return HttpResponse(item.image, content_type="image/png")
-
-def marketplace(request):
-    items = Item.objects.all()
-    return render(request, 'marketplace.html', {'items': items})
 
 def send_message(request, item_id):
     item = get_object_or_404(Item, id=item_id)
@@ -295,7 +295,8 @@ def close_event(request, event_id):
         # user_profile.points += 10
         user_profile.save()
     
-    event.delete()
+    event.is_closed = True
+    event.save()
     
     return redirect('home')
 
