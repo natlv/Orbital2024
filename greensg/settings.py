@@ -1,8 +1,5 @@
-from decouple import config, Csv
 from pathlib import Path
 import os
-import dj_database_url
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,7 +15,6 @@ SECRET_KEY = 'django-insecure-k5a7l0na(sem0#+ufb4qi@ek_3s7qbq@+2gf!_818)@9l(0xm%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1']
 
 # Application definition

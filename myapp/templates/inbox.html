@@ -4,12 +4,12 @@
 <h1>Inbox</h1>
 <div class="messages">
     {% for message in messages %}
-    <div class="message">
+    <div class="message" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
         <p>From: {{ message.sender.username }}</p>
         <p>About: {{ message.item.name }}</p>
         <p>Message: {{ message.message }}</p>
         <p>Received: {{ message.timestamp }}</p>
-        <!-- <p>Buyer can be contacted at: {{ message.email }}</p> -->
+        <p>Buyer can be contacted at: {{ message.email }}</p>
     </div>
     {% endfor %}
 </div>
