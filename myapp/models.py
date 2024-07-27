@@ -27,6 +27,7 @@ class Event(models.Model):
     event_start = models.DateTimeField(default=timezone.now)
     event_end = models.DateTimeField(default=timezone.now)
     participants = models.ManyToManyField(User, related_name='joined_events', blank=True)
+    email = models.EmailField(default='')
     
     def __str__(self):
         return self.event_name
@@ -95,6 +96,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    email = models.EmailField(default='')
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
