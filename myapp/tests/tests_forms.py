@@ -6,7 +6,8 @@ from myapp.forms import (EventCreateForm,
                          ItemForm,
                          LoginForm,
                          ProfileForm, 
-                         SignupForm)
+                         SignupForm,
+                         MessageForm)
 
 class TestSignupForm(TestCase):
 
@@ -70,6 +71,7 @@ class TestEventCreateForm(TestCase):
             'event_location': 'City Park',
             'event_start': timezone.now() + timezone.timedelta(),
             'event_end': timezone.now() + timezone.timedelta(days=1, hours=2),
+            'email': 'test@example.com',
         }
         self.request = type('Request', (), {'user': type('User', (), {'username': 'testuser'})})
         
@@ -187,6 +189,7 @@ class TestProfileForm(TestCase):
         self.assertIn('birth_date', form.errors)
 
 class TestItemForm(TestCase):
+
     def test_item_form_valid_data(self):
         form = ItemForm(data = {
             'name': 'Test Item',
@@ -201,3 +204,17 @@ class TestItemForm(TestCase):
     
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 3)
+
+class TestMessageForm(TestCase):
+
+    def test_message_form_valid_data(self):
+        form = MessageForm(data={
+            'message': 'Test Message',
+            'email': 'test@example.com'
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_message_form_no_data(self):
+        form = MessageForm(data = {})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 2)

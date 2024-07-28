@@ -60,7 +60,7 @@
         Location: {{ event.event_location }}
       </p>
       <p>
-        Contact Event Creator: <a href="mailto:{{event.email}}">Email Event Organiser</a>
+        Contact Event Creator: {{ event.email }}
       </p>    
       <br>
     {% endfor %}
