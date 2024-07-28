@@ -170,8 +170,8 @@ class EventCreateViewTest(TestCase):
     @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
     def test_form_valid(self):
         form_data = {
-            'creator': self.user.username,
             'organisation': 'Test Org',
+            'email': 'testuser@example.com',
             'event_name': 'Test Event',
             'event_type': 'seminar',
             'event_location': 'Test Location',
@@ -255,7 +255,7 @@ class MyEventsViewTest(TestCase):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client.login(username='testuser', password='password')
         create_event_data = {
-            'creator': self.user.username,
+            'email': 'testuser@example.com',
             'organisation': 'Test Org',
             'event_name': 'Test Event',
             'event_type': 'seminar',
@@ -268,6 +268,7 @@ class MyEventsViewTest(TestCase):
         self.created_event = Event.objects.get(creator=self.user.username)
         self.joined_event = Event.objects.create(
             creator='testcreator',
+            email='testcreator@example.com',
             organisation='Test Organisation2',
             event_name='Test Event2',
             event_type='workshop',
@@ -423,7 +424,7 @@ class AttendanceViewTests(TestCase):
         self.user3 = User.objects.create_user(username='testuser3', password='password123456#')
         self.client.login(username='testuser1', password='password1234$')
         event_data = {
-            'creator': self.user1.username,
+            'email': 'testuser@example.com',
             'organisation': 'Test Org',
             'event_name': 'Test Event',
             'event_type': 'seminar',

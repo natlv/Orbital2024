@@ -58,7 +58,7 @@ def user_logout(request):
 class EventCreateView(LoginRequiredMixin, FormView):
     template_name = 'event_create.html'
     form_class = EventCreateForm
-    success_url = reverse_lazy('event_create')
+    success_url = reverse_lazy('my_events')
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:

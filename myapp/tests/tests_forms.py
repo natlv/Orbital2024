@@ -64,6 +64,7 @@ class TestEventCreateForm(TestCase):
     def setUp(self):
         self.valid_data = {
             'organisation': 'Green Earth',
+            'email': 'testuser@example.com',
             'event_name': 'Community Cleanup',
             'event_type': 'cleanup',
             'event_location': 'City Park',
@@ -79,7 +80,7 @@ class TestEventCreateForm(TestCase):
     def test_event_create_form_no_data(self):
         form = EventCreateForm(data = {}, request=self.request)
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 7)
+        self.assertEqual(len(form.errors), 8)
         self.assertIn("Event start time is required.",
                       form.errors['__all__'])
 
