@@ -175,6 +175,7 @@ class EventCreateViewTest(TestCase):
             'event_name': 'Test Event',
             'event_type': 'seminar',
             'event_location': 'Test Location',
+            'email': 'test@example.com',
             'event_start': timezone.now(),
             'event_end': timezone.now() + timezone.timedelta(hours=2),
         }
