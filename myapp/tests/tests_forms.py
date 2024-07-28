@@ -70,6 +70,7 @@ class TestEventCreateForm(TestCase):
             'event_location': 'City Park',
             'event_start': timezone.now() + timezone.timedelta(),
             'event_end': timezone.now() + timezone.timedelta(days=1, hours=2),
+            'email': 'test@example.com',
         }
         self.request = type('Request', (), {'user': type('User', (), {'username': 'testuser'})})
         
@@ -80,7 +81,7 @@ class TestEventCreateForm(TestCase):
     def test_event_create_form_no_data(self):
         form = EventCreateForm(data = {}, request=self.request)
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 7)
+        self.assertEqual(len(form.errors), 8)
         self.assertIn("Event start time is required.",
                       form.errors['__all__'])
 
